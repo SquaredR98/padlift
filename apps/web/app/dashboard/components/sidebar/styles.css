@@ -1,0 +1,58 @@
+@reference "tailwindcss";
+@reference "../../../globals.css";
+
+.sidebar-root {
+  @apply flex w-60 shrink-0 flex-col border-r border-border bg-background;
+}
+
+.sidebar-logo {
+  @apply flex h-14 items-center gap-2.5 border-b border-border px-5;
+}
+
+.sidebar-nav {
+  @apply flex-1 overflow-y-auto px-3 py-4;
+}
+
+.sidebar-nav-link {
+  @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition;
+}
+
+.sidebar-nav-link-active {
+  @apply bg-accent text-foreground;
+}
+
+.sidebar-nav-link-inactive {
+  @apply text-muted-foreground;
+
+  &:hover {
+    @apply bg-accent text-foreground;
+  }
+}
+
+.sidebar-section-divider {
+  @apply mb-2 border-t border-border pt-4;
+}
+
+.sidebar-back-link {
+  @apply flex items-center gap-1.5 px-3 text-xs font-medium text-muted-foreground transition;
+
+  &:hover {
+    @apply text-foreground;
+  }
+}
+
+.sidebar-section-title {
+  @apply mt-2 truncate px-3 text-sm font-semibold text-foreground;
+}
+
+.sidebar-profile {
+  @apply border-t border-border p-3;
+}
+
+.sidebar-profile-trigger {
+  @apply flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition;
+
+  &:hover {
+    @apply bg-accent;
+  }
+}

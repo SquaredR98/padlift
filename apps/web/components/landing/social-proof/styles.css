@@ -1,0 +1,19 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.social-proof-section {
+  @apply py-24;
+}
+
+.social-proof-stats {
+  @apply grid grid-cols-3 gap-8;
+}
+
+.social-proof-card {
+  @apply p-6;
+
+  &:hover {
+    box-shadow: 0 8px 32px var(--lp-landing-glow);
+    border-color: color-mix(in srgb, var(--border) 60%, var(--lp-landing-primary));
+  }
+}

@@ -1,0 +1,45 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.pricing-card {
+  @apply relative rounded-xl border border-border bg-card p-6 transition-all;
+
+  &:hover {
+    box-shadow: 0 8px 32px var(--lp-landing-glow);
+    border-color: color-mix(in srgb, var(--border) 60%, var(--lp-landing-primary));
+  }
+}
+
+.pricing-card-popular {
+  border-color: var(--lp-landing-primary);
+  box-shadow: 0 0 0 1px var(--lp-landing-primary), 0 4px 24px var(--lp-landing-glow);
+}
+
+.pricing-popular-badge {
+  @apply absolute -top-3 left-1/2 rounded-full px-3 py-0.5 text-xs font-semibold text-white;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-accent));
+  animation: lp-pulse-badge 2s ease-in-out infinite;
+}
+
+.pricing-cta {
+  @apply mt-6 block w-full rounded-lg py-2.5 text-center text-sm font-medium transition-all;
+}
+
+.pricing-cta-primary {
+  @apply text-white;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-primary-hover));
+  box-shadow: 0 2px 12px var(--lp-landing-glow);
+
+  &:hover {
+    box-shadow: 0 4px 20px var(--lp-landing-glow);
+    transform: translateY(-1px);
+  }
+}
+
+.pricing-cta-outline {
+  @apply border border-border text-foreground;
+
+  &:hover {
+    @apply bg-muted;
+  }
+}

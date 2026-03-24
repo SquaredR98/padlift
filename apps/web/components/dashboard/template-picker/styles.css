@@ -1,0 +1,47 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.tp-input {
+  @apply w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder-dimmed-foreground transition-shadow;
+
+  &:focus {
+    @apply border-blue-500 outline-none ring-1 ring-blue-500;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+}
+
+.tp-btn-primary {
+  @apply inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white transition;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.25);
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+    filter: brightness(1.05);
+  }
+
+  &:disabled {
+    @apply opacity-50;
+    box-shadow: none;
+  }
+}
+
+.tp-btn-outline {
+  @apply inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-muted-foreground transition;
+
+  &:hover {
+    @apply text-foreground;
+  }
+}
+
+.tp-error {
+  @apply mt-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700;
+
+  :is(.dark *) & {
+    @apply border-red-800 bg-red-950 text-red-300;
+  }
+}
+
+.tp-summary-row {
+  @apply rounded-lg bg-muted/50 px-4 py-3;
+}

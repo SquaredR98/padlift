@@ -1,0 +1,394 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Editor Theme Tokens ── */
+/* Light mode: :root default (dashboard has no .dark class in light mode) */
+/* Dark mode: .dark class (set by next-themes on <html>) */
+/* Also supports [data-theme] for explicit overrides */
+@layer base {
+  :root,
+  [data-theme="light"] {
+    --lp-bg: #f8f9fb;
+    --lp-bg-panel: #ffffff;
+    --lp-bg-surface: #f1f3f5;
+    --lp-bg-hover: #e9ecef;
+    --lp-bg-active: #dee2e6;
+    --lp-border: #d1d5db;
+    --lp-text: #1a1a2e;
+    --lp-text-secondary: #495057;
+    --lp-text-muted: #868e96;
+    --lp-accent: #3b82f6;
+    --lp-accent-hover: #2563eb;
+    --lp-accent-muted: rgba(59, 130, 246, 0.1);
+    --lp-canvas-bg: #e9ecef;
+    --lp-shadow: rgba(0, 0, 0, 0.12);
+    --lp-success: #16a34a;
+    --lp-error: #dc2626;
+  }
+
+  .dark,
+  [data-theme="dark"] {
+    --lp-bg: #0f1117;
+    --lp-bg-panel: #161a22;
+    --lp-bg-surface: #1c2130;
+    --lp-bg-hover: #252b38;
+    --lp-bg-active: #2d3548;
+    --lp-border: #2a3040;
+    --lp-text: #e2e8f0;
+    --lp-text-secondary: #94a3b8;
+    --lp-text-muted: #64748b;
+    --lp-accent: #3b82f6;
+    --lp-accent-hover: #2563eb;
+    --lp-accent-muted: rgba(59, 130, 246, 0.15);
+    --lp-canvas-bg: #1a1f2e;
+    --lp-shadow: rgba(0, 0, 0, 0.5);
+    --lp-success: #22c55e;
+    --lp-error: #f87171;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+
+/* ── Thin themed scrollbars ── */
+@layer base {
+  /* Webkit (Chrome, Edge, Safari) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--lp-bg-active, #2d3548);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--lp-text-muted, #64748b);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--lp-bg-active, #2d3548) transparent;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-dimmed-foreground: var(--dimmed-foreground);
+}
+
+:root {
+  --radius: 0.625rem;
+  --lp-landing-primary: #3b82f6;
+  --lp-landing-primary-hover: #2563eb;
+  --lp-landing-accent: #06b6d4;
+  --lp-landing-glow: rgba(59, 130, 246, 0.15);
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #f8fafc;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-foreground: #f8fafc;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #3b82f6;
+  --dimmed-foreground: #9ca3af;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0f172a;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #3b82f6;
+}
+
+/* ── Landing Page Site Theme Tokens ── */
+@layer base {
+  :root,
+  [data-site-theme="dark"] {
+    --lp-site-bg: #030712;
+    --lp-site-card: #111827;
+    --lp-site-card-hover: #1f2937;
+    --lp-site-heading: #ffffff;
+    --lp-site-body: #94a3b8;
+    --lp-site-muted: #64748b;
+    --lp-site-dimmed: #475569;
+    --lp-site-border: #1f2937;
+    --lp-site-border-subtle: rgba(255, 255, 255, 0.05);
+    --lp-site-input-bg: #111827;
+    --lp-site-input-border: #1f2937;
+    --lp-site-badge-bg: rgba(255, 255, 255, 0.05);
+    --lp-site-badge-border: rgba(255, 255, 255, 0.1);
+    --lp-site-badge-text: #e2e8f0;
+    --lp-site-ghost-hover: rgba(255, 255, 255, 0.05);
+    --lp-site-avatar-ring: #030712;
+    --lp-site-check: #34d399;
+    --lp-site-divider: #1f2937;
+  }
+
+  [data-site-theme="light"] {
+    --lp-site-bg: #ffffff;
+    --lp-site-card: #f8fafc;
+    --lp-site-card-hover: #f1f5f9;
+    --lp-site-heading: #0f172a;
+    --lp-site-body: #334155;
+    --lp-site-muted: #64748b;
+    --lp-site-dimmed: #94a3b8;
+    --lp-site-border: #e2e8f0;
+    --lp-site-border-subtle: rgba(0, 0, 0, 0.06);
+    --lp-site-input-bg: #f8fafc;
+    --lp-site-input-border: #cbd5e1;
+    --lp-site-badge-bg: rgba(0, 0, 0, 0.04);
+    --lp-site-badge-border: rgba(0, 0, 0, 0.1);
+    --lp-site-badge-text: #1e293b;
+    --lp-site-ghost-hover: rgba(0, 0, 0, 0.04);
+    --lp-site-avatar-ring: #ffffff;
+    --lp-site-check: #059669;
+    --lp-site-divider: #e2e8f0;
+  }
+}
+
+/* ── Scroll Reveal Animations (published sites only) ── */
+/* Only apply reveal animation on published sites (data-lp-published), not in editor */
+@layer base {
+  [data-lp-published] [data-lp-section] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  [data-lp-published] [data-lp-section][data-revealed] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* First section should always be visible (no scroll-in for hero) */
+  [data-lp-published] [data-lp-section]:first-child {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Shimmer Animation ── */
+@layer base {
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .animate-shimmer {
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+}
+
+/* ── Block Builder Animations ── */
+@layer base {
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes blur-in {
+    from { opacity: 0; filter: blur(8px); }
+    to { opacity: 1; filter: blur(0); }
+  }
+  @keyframes slide-left {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slide-right {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes bounce-in {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+}
+
+/* ── Landing Page Animations ── */
+@layer base {
+  @keyframes lp-float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(30px, -20px); }
+  }
+  @keyframes lp-gradient-shift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+  @keyframes lp-pulse-badge {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+  }
+  @keyframes lp-float-card {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(-2deg); }
+  }
+  @keyframes lp-float-card-2 {
+    0%, 100% { transform: translateY(0) rotate(1deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+}
+
+@theme inline {
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-slide-up: slide-up 0.6s ease-out both;
+  --animate-scale-in: scale-in 0.5s ease-out both;
+  --animate-blur-in: blur-in 0.6s ease-out both;
+  --animate-slide-left: slide-left 0.6s ease-out both;
+  --animate-slide-right: slide-right 0.6s ease-out both;
+  --animate-bounce-in: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+.dark {
+  --lp-landing-primary: #60a5fa;
+  --lp-landing-primary-hover: #3b82f6;
+  --lp-landing-accent: #22d3ee;
+  --lp-landing-glow: rgba(96, 165, 250, 0.12);
+  --background: #030712;
+  --foreground: #f9fafb;
+  --card: #111827;
+  --card-foreground: #f9fafb;
+  --popover: #111827;
+  --popover-foreground: #f9fafb;
+  --primary: #f9fafb;
+  --primary-foreground: #111827;
+  --secondary: #1f2937;
+  --secondary-foreground: #f9fafb;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #1f2937;
+  --accent-foreground: #f9fafb;
+  --destructive: #f87171;
+  --border: #1f2937;
+  --input: #374151;
+  --ring: #3b82f6;
+  --dimmed-foreground: #6b7280;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: #030712;
+  --sidebar-foreground: #f9fafb;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #f9fafb;
+  --sidebar-accent: #1f2937;
+  --sidebar-accent-foreground: #f9fafb;
+  --sidebar-border: #1f2937;
+  --sidebar-ring: #3b82f6;
+}
+
+/* ── Landing Page Shared Card ── */
+.landing-card {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.landing-card:hover {
+  box-shadow: 0 8px 32px var(--lp-landing-glow);
+  border-color: color-mix(in srgb, var(--border) 60%, var(--lp-landing-primary));
+}
+
+/* ── Auth Button ── */
+.auth-btn-primary {
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  transition: all 0.2s;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-primary-hover));
+  box-shadow: 0 2px 12px var(--lp-landing-glow);
+}
+.auth-btn-primary:hover {
+  box-shadow: 0 4px 20px var(--lp-landing-glow);
+  filter: brightness(1.05);
+}
+.auth-btn-primary:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+/* ── Auth Form Side ── */
+.auth-form-side {
+  position: relative;
+}
+.auth-form-side::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--lp-landing-primary) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.03;
+  pointer-events: none;
+}

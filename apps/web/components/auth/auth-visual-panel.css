@@ -1,0 +1,98 @@
+@reference "tailwindcss";
+@reference "../../app/globals.css";
+
+.auth-panel {
+  @apply relative h-full overflow-hidden bg-muted;
+}
+
+/* Gradient mesh */
+.auth-panel-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  animation: lp-float 8s ease-in-out infinite alternate;
+}
+
+.auth-panel-glow-blue {
+  width: 400px;
+  height: 400px;
+  top: 10%;
+  left: 20%;
+  background: var(--lp-landing-primary);
+  opacity: 0.15;
+}
+
+.auth-panel-glow-cyan {
+  width: 300px;
+  height: 300px;
+  bottom: 20%;
+  right: 10%;
+  background: var(--lp-landing-accent);
+  opacity: 0.1;
+  animation-delay: -4s;
+}
+
+.auth-panel-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--lp-landing-primary) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.auth-panel-content {
+  @apply relative z-10 flex h-full flex-col items-center justify-center p-12;
+}
+
+/* Floating UI mockup cards */
+.auth-float-card {
+  @apply rounded-xl border border-border p-4;
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 240px;
+}
+
+.auth-float-card-1 {
+  animation: lp-float-card 4s ease-in-out infinite;
+  transform: rotate(-2deg);
+  margin-bottom: 1.5rem;
+}
+
+.auth-float-card-2 {
+  animation: lp-float-card-2 5s ease-in-out infinite;
+  transform: rotate(1deg);
+  margin-bottom: 2rem;
+}
+
+.auth-float-card-bar {
+  @apply mb-3 h-2 rounded-full;
+  width: 40%;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-accent));
+}
+
+.auth-float-card-line {
+  @apply mb-2 h-2 rounded-full bg-muted;
+}
+
+.auth-float-card-line-long {
+  width: 90%;
+}
+
+.auth-float-card-line-medium {
+  width: 70%;
+}
+
+.auth-float-card-line-short {
+  width: 50%;
+}
+
+/* Testimonial glass card */
+.auth-testimonial {
+  @apply rounded-xl border border-border p-5;
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  backdrop-filter: blur(16px);
+  max-width: 280px;
+}

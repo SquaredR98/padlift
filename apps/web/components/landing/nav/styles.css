@@ -1,0 +1,42 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.landing-nav {
+  @apply sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md;
+  transition: box-shadow 0.3s ease;
+}
+
+.landing-nav-scrolled {
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.08);
+
+  :is(.dark *) & {
+    box-shadow: 0 1px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.landing-nav-inner {
+  @apply mx-auto flex max-w-6xl items-center justify-between px-6 py-4;
+}
+
+.landing-nav-logo {
+  @apply flex items-center gap-2;
+}
+
+.landing-nav-login {
+  @apply text-sm text-muted-foreground transition-colors;
+
+  &:hover {
+    @apply text-foreground;
+  }
+}
+
+.landing-nav-cta {
+  @apply rounded-lg px-4 py-2 text-sm font-medium text-white transition-all;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-primary-hover));
+  box-shadow: 0 2px 12px var(--lp-landing-glow);
+
+  &:hover {
+    box-shadow: 0 4px 20px var(--lp-landing-glow);
+    transform: translateY(-1px);
+  }
+}

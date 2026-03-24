@@ -1,0 +1,97 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.landing-hero {
+  @apply relative overflow-hidden py-24;
+
+  @media (width >= 40rem) {
+    @apply py-32;
+  }
+}
+
+.landing-hero-inner {
+  @apply relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 text-center;
+}
+
+/* ── Gradient mesh backdrop ── */
+.landing-hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  animation: lp-float 8s ease-in-out infinite alternate;
+}
+
+.landing-hero-glow-blue {
+  width: 500px;
+  height: 500px;
+  top: -100px;
+  left: 20%;
+  background: var(--lp-landing-primary);
+  opacity: 0.12;
+}
+
+.landing-hero-glow-cyan {
+  width: 400px;
+  height: 400px;
+  bottom: -80px;
+  right: 15%;
+  background: var(--lp-landing-accent);
+  opacity: 0.08;
+  animation-delay: -4s;
+}
+
+.landing-hero-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--lp-landing-primary) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+/* ── Badge ── */
+.landing-hero-badge {
+  @apply mb-6 flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-sm;
+}
+
+/* ── Title ── */
+.landing-hero-title h1 {
+  @apply mb-6 text-4xl font-bold tracking-tight text-foreground;
+
+  @media (width >= 40rem) {
+    @apply text-6xl;
+  }
+}
+
+.landing-hero-highlight {
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Subtitle ── */
+.landing-hero-desc {
+  @apply mb-8 max-w-2xl text-lg text-muted-foreground;
+}
+
+/* ── CTA ── */
+.landing-hero-cta {
+  @apply flex items-center gap-2 rounded-lg px-6 py-3 font-medium text-white transition-all;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-primary-hover));
+  box-shadow: 0 4px 24px var(--lp-landing-glow);
+
+  &:hover {
+    box-shadow: 0 6px 32px var(--lp-landing-glow);
+    transform: translateY(-1px);
+  }
+
+  & svg {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover svg {
+    transform: translateX(4px);
+  }
+}

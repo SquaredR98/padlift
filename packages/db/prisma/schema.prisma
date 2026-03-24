@@ -1,0 +1,577 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum SiteMode {
+  WAITLIST
+  LIVE
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum AbTestStatus {
+  DRAFT
+  RUNNING
+  PAUSED
+  COMPLETED
+}
+
+enum AbTestScope {
+  FULL_PAGE
+  SECTION
+}
+
+enum EventType {
+  WAITLIST_SIGNUP
+  CHECKOUT_START
+  PURCHASE
+}
+
+enum ChangelogCategory {
+  NEW
+  IMPROVED
+  FIXED
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum AdminRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum TestimonialStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum FeatureStatus {
+  OPEN
+  PLANNED
+  IN_PROGRESS
+  SHIPPED
+  DECLINED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MessageSender {
+  USER
+  ADMIN
+}
+
+// ─── Models ───────────────────────────────────────────────
+
+model Profile {
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  emailVerified      DateTime? @map("email_verified")
+  passwordHash       String?   @map("password_hash")
+  name               String?
+  avatarUrl          String?   @map("avatar_url")
+  plan                    Plan      @default(FREE)
+  gumroadSubscriptionId   String?   @map("gumroad_subscription_id")
+  gumroadCustomerId       String?   @map("gumroad_customer_id")
+  planExpiresAt           DateTime? @map("plan_expires_at")
+  onboardingComplete      Boolean   @default(false) @map("onboarding_complete")
+  role                    AdminRole @default(USER)
+  adminPermissions        String[]  @default([]) @map("admin_permissions")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  sites            Site[]
+  claimedTemplates Template[]
+  accounts         Account[]
+  sessions         Session[]
+  mediaFiles       MediaFile[]
+  testimonials     Testimonial[]
+  featureRequests  FeatureRequest[]
+  featureVotes     FeatureVote[]
+  supportTickets   SupportTicket[]
+
+  @@map("profiles")
+}
+
+/// Auth.js Account model (OAuth/social connections)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+/// Auth.js Session model (database sessions)
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+/// Auth.js VerificationToken model (email verification, password reset)
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+/// A creator's site/project.
+model Site {
+  id               String    @id @default(uuid())
+  profileId        String    @map("profile_id")
+  name             String
+  slug             String    @unique
+  customDomain     String?   @unique @map("custom_domain")
+  mode             SiteMode  @default(WAITLIST)
+  publishedAt      DateTime? @map("published_at")
+  ga4MeasurementId String?   @map("ga4_measurement_id")
+  gtmContainerId   String?   @map("gtm_container_id")
+  clarityProjectId String?   @map("clarity_project_id")
+  templateId       String?   @map("template_id")
+  templateContent  Json?     @map("template_content")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  profile          Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  pages            Page[]
+  paymentLinks     PaymentLink[]
+  waitlistEntries  WaitlistEntry[]
+  visitors         Visitor[]
+  conversions      Conversion[]
+  abTests          AbTest[]
+  changelogEntries ChangelogEntry[]
+  analyticsEvents  AnalyticsEvent[]
+  mediaFiles       MediaFile[]
+  integrations     SiteIntegration[]
+
+  @@index([profileId])
+  @@map("sites")
+}
+
+/// Page content. Each site has one homepage (slug=null) and optional sub-pages.
+model Page {
+  id            String     @id @default(uuid())
+  siteId        String     @map("site_id")
+  slug          String?    // null = homepage, e.g. "about" for /about sub-page
+  title         String     @default("Home")
+  contentJson   Json       @map("content_json")
+  publishedHtml String?    @map("published_html")
+  publishedCss  String?    @map("published_css")
+  publishedJs   String?    @map("published_js")
+  version       Int        @default(1)
+  templateId    String?    @map("template_id")
+  status        PageStatus @default(DRAFT)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, slug])
+  @@index([siteId])
+  @@map("pages")
+}
+
+/// Pre-built page templates. Content lives in code; DB tracks claim status.
+model Template {
+  id                 String    @id @default(uuid())
+  name               String
+  slug               String    @unique
+  description        String?
+  thumbnail          String?
+  category           String    @default("general")
+  contentJson        Json      @map("content_json")
+  isBuiltin          Boolean   @default(true) @map("is_builtin")
+  claimedByProfileId String?   @map("claimed_by_profile_id")
+  claimedAt          DateTime? @map("claimed_at")
+  claimedSiteId      String?   @unique @map("claimed_site_id")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  claimedBy          Profile?  @relation(fields: [claimedByProfileId], references: [id])
+
+  @@map("templates")
+}
+
+/// Admin-configurable plan tiers. Stored in DB so pricing, limits, and Gumroad URLs
+/// can be changed without code deploys.
+model PlanConfig {
+  id                 String   @id @default(uuid())
+  tier               Plan     @unique
+  displayName        String   @map("display_name")
+  priceMonthly       Int      @default(0) @map("price_monthly")   // cents
+  priceYearly        Int      @default(0) @map("price_yearly")    // cents
+  gumroadProductId   String?  @map("gumroad_product_id")
+  gumroadMonthlyUrl  String?  @map("gumroad_monthly_url")
+  gumroadYearlyUrl   String?  @map("gumroad_yearly_url")
+  gumroadTierName    String?  @map("gumroad_tier_name")  // Membership tier name (e.g. "Pro", "Business")
+  maxSites           Int      @default(1) @map("max_sites")
+  maxWaitlistEntries Int      @default(100) @map("max_waitlist_entries")
+  maxPages           Int      @default(1) @map("max_pages")
+  maxPaymentLinks    Int      @default(0) @map("max_payment_links")
+  customDomain       Boolean  @default(false) @map("custom_domain")
+  removeBranding     Boolean  @default(false) @map("remove_branding")
+  googleSheets       Boolean  @default(false) @map("google_sheets")
+  webhooks           Boolean  @default(false) @map("webhooks")
+  analytics          Boolean  @default(false)
+  abTesting          Boolean  @default(false) @map("ab_testing")
+  maxStorageMb       Int      @default(50) @map("max_storage_mb")   // per-user storage quota in MB
+  features           String[] @default([])
+  position           Int      @default(0)
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@map("plan_configs")
+}
+
+/// Payment links pasted by creator. No API keys stored.
+model PaymentLink {
+  id           String       @id @default(uuid())
+  siteId       String       @map("site_id")
+  planName     String       @map("plan_name")
+  price        Decimal      @db.Decimal(10, 2)
+  billingCycle BillingCycle @map("billing_cycle")
+  stripeUrl    String       @map("stripe_url")
+  position     Int          @default(0)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
+  @@map("payment_links")
+}
+
+/// Waitlist signups with viral referral mechanics.
+model WaitlistEntry {
+  id            String    @id @default(uuid())
+  siteId        String    @map("site_id")
+  email         String
+  referralCode  String    @unique @map("referral_code")
+  referredById  String?   @map("referred_by_id")
+  position      Int
+  referralCount Int       @default(0) @map("referral_count")
+  joinedAt      DateTime  @default(now()) @map("joined_at")
+  notifiedAt    DateTime? @map("notified_at")
+
+  site       Site           @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  referredBy WaitlistEntry? @relation("Referrals", fields: [referredById], references: [id])
+  referrals  WaitlistEntry[] @relation("Referrals")
+
+  @@unique([siteId, email])
+  @@index([siteId])
+  @@index([referralCode])
+  @@map("waitlist_entries")
+}
+
+/// Anonymous visitor tracking for analytics + A/B attribution.
+model Visitor {
+  id          String   @id @default(uuid())
+  siteId      String   @map("site_id")
+  visitorHash String   @map("visitor_hash")
+  firstSeen   DateTime @default(now()) @map("first_seen")
+  lastSeen    DateTime @default(now()) @map("last_seen")
+  utmSource   String?  @map("utm_source")
+  utmMedium   String?  @map("utm_medium")
+  utmCampaign String?  @map("utm_campaign")
+  deviceType  String?  @map("device_type")
+  referrer    String?
+
+  site        Site             @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  conversions Conversion[]
+  events      AnalyticsEvent[]
+
+  @@unique([siteId, visitorHash])
+  @@index([siteId])
+  @@map("visitors")
+}
+
+/// Conversion events: waitlist signup, checkout start, purchase.
+model Conversion {
+  id               String    @id @default(uuid())
+  visitorId        String    @map("visitor_id")
+  siteId           String    @map("site_id")
+  eventType        EventType @map("event_type")
+  planName         String?   @map("plan_name")
+  estimatedValue   Decimal?  @db.Decimal(10, 2) @map("estimated_value")
+  variantId        String?   @map("variant_id")
+  attributedSource String?   @map("attributed_source")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  visitor Visitor    @relation(fields: [visitorId], references: [id])
+  site    Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  variant AbVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([siteId])
+  @@index([variantId])
+  @@map("conversions")
+}
+
+/// A/B test configuration.
+model AbTest {
+  id              String       @id @default(uuid())
+  siteId          String       @map("site_id")
+  name            String
+  hypothesis      String?
+  scope           AbTestScope  @default(FULL_PAGE)
+  status          AbTestStatus @default(DRAFT)
+  trafficSplit    Json?        @map("traffic_split")
+  winnerVariantId String?      @map("winner_variant_id")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  endedAt         DateTime?    @map("ended_at")
+
+  site     Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  variants AbVariant[]
+
+  @@index([siteId])
+  @@map("ab_tests")
+}
+
+/// Individual A/B test variant with aggregated metrics.
+model AbVariant {
+  id               String   @id @default(uuid())
+  testId           String   @map("test_id")
+  name             String
+  contentJson      Json?    @map("content_json")
+  visitorsCount    Int      @default(0) @map("visitors_count")
+  conversionsCount Int      @default(0) @map("conversions_count")
+  revenueTotal     Decimal  @default(0) @db.Decimal(10, 2) @map("revenue_total")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  test        AbTest           @relation(fields: [testId], references: [id], onDelete: Cascade)
+  conversions Conversion[]
+  events      AnalyticsEvent[]
+
+  @@index([testId])
+  @@map("ab_variants")
+}
+
+/// Changelog entries for post-launch communication.
+model ChangelogEntry {
+  id          String            @id @default(uuid())
+  siteId      String            @map("site_id")
+  title       String
+  bodyMd      String            @map("body_md")
+  category    ChangelogCategory @default(NEW)
+  publishedAt DateTime?         @map("published_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([siteId])
+  @@map("changelog_entries")
+}
+
+/// Raw analytics events for granular tracking.
+model AnalyticsEvent {
+  id             String   @id @default(uuid())
+  siteId         String   @map("site_id")
+  visitorId      String?  @map("visitor_id")
+  eventName      String   @map("event_name")
+  propertiesJson Json?    @map("properties_json")
+  variantId      String?  @map("variant_id")
+  timestamp      DateTime @default(now())
+
+  site    Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  visitor Visitor?   @relation(fields: [visitorId], references: [id])
+  variant AbVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([siteId, timestamp])
+  @@index([eventName])
+  @@map("analytics_events")
+}
+
+/// Site integrations (Google Sheets, webhooks, etc.)
+model SiteIntegration {
+  id            String    @id @default(cuid())
+  siteId        String    @map("site_id")
+  type          String    // "google_sheets" | "webhook"
+  config        Json      // { spreadsheetId, sheetName } or { url, secret }
+  credentials   Json?     // Google OAuth tokens (encrypted at rest)
+  enabled       Boolean   @default(true)
+  lastSyncAt    DateTime? @map("last_sync_at")
+  lastSyncError String?   @map("last_sync_error")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, type])
+  @@map("site_integrations")
+}
+
+/// Uploaded media files (images, etc.) stored via storage adapter.
+model MediaFile {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  siteId      String?  @map("site_id")
+  filename    String
+  key         String   @unique
+  url         String
+  contentType String   @map("content_type")
+  size        Int
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  site Site?   @relation(fields: [siteId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("media_files")
+}
+
+// ─── Testimonials ────────────────────────────────────────
+
+model Testimonial {
+  id        String             @id @default(uuid())
+  name      String
+  role      String?
+  company   String?
+  quote     String
+  rating    Int                @default(5)
+  avatarUrl String?            @map("avatar_url")
+  status    TestimonialStatus  @default(PENDING)
+  featured  Boolean            @default(false)
+  position  Int                @default(0)
+  profileId String?            @map("profile_id")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  profile Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  @@map("testimonials")
+}
+
+// ─── Feature Requests ────────────────────────────────────
+
+model FeatureRequest {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  status      FeatureStatus @default(OPEN)
+  voteCount   Int           @default(0) @map("vote_count")
+  profileId   String?       @map("profile_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  profile Profile?      @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  votes   FeatureVote[]
+
+  @@map("feature_requests")
+}
+
+model FeatureVote {
+  id        String   @id @default(uuid())
+  requestId String   @map("request_id")
+  profileId String   @map("profile_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  request FeatureRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  profile Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, profileId])
+  @@map("feature_votes")
+}
+
+// ─── Support Tickets ─────────────────────────────────────
+
+model SupportTicket {
+  id        String         @id @default(uuid())
+  subject   String
+  status    TicketStatus   @default(OPEN)
+  priority  TicketPriority @default(MEDIUM)
+  profileId String         @map("profile_id")
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  profile  Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  messages SupportMessage[]
+
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id        String        @id @default(uuid())
+  ticketId  String        @map("ticket_id")
+  sender    MessageSender
+  body      String
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@map("support_messages")
+}
+
+// ─── Pricing Experiments ────────────────────────────────
+
+model PricingExperiment {
+  id          String   @id @default(uuid())
+  name        String
+  isActive    Boolean  @default(false) @map("is_active")
+  weight      Int      @default(1)
+  variants    Json     // PricingVariant[] — tier overrides (displayName, priceMonthly, lsVariantId)
+  conversions Int      @default(0)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("pricing_experiments")
+}
+
+// ─── App Settings (key-value) ───────────────────────────
+
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("app_settings")
+}

@@ -1,0 +1,162 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.settings-section-card {
+  @apply rounded-lg border border-border bg-card;
+}
+
+.settings-section-card-danger {
+  @apply border-red-300;
+
+  :is(.dark *) & {
+    @apply border-red-900/50;
+  }
+}
+
+.settings-section-header {
+  @apply flex items-center gap-2 border-b border-border px-5 py-3;
+}
+
+.settings-section-header-danger {
+  @apply border-red-300;
+
+  :is(.dark *) & {
+    @apply border-red-900/50;
+  }
+}
+
+.settings-section-body {
+  @apply p-5;
+}
+
+.settings-input {
+  @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder-dimmed-foreground transition;
+
+  &:focus {
+    @apply border-border outline-none ring-1 ring-border;
+  }
+}
+
+.settings-input-readonly {
+  @apply cursor-not-allowed opacity-60;
+}
+
+.settings-save-btn {
+  @apply inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition;
+
+  &:hover {
+    @apply bg-blue-700;
+  }
+
+  &:disabled {
+    @apply opacity-50;
+  }
+}
+
+.settings-btn-primary-sm {
+  @apply rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition;
+
+  &:hover {
+    @apply bg-blue-700;
+  }
+
+  &:disabled {
+    @apply opacity-40;
+  }
+}
+
+.settings-btn-ghost-sm {
+  @apply rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition;
+
+  &:hover {
+    @apply text-foreground;
+  }
+}
+
+.settings-btn-danger-sm {
+  @apply rounded-lg px-3 py-1.5 text-xs font-medium text-red-600 transition;
+
+  :is(.dark *) & {
+    @apply text-red-400;
+  }
+
+  &:hover {
+    @apply bg-red-100;
+  }
+
+  :is(.dark *) &:hover {
+    @apply bg-red-900/20;
+  }
+}
+
+.settings-btn-danger-outline {
+  @apply inline-flex items-center gap-2 rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-600 transition;
+
+  :is(.dark *) & {
+    @apply border-red-900/50 text-red-400;
+  }
+
+  &:hover {
+    @apply bg-red-100;
+  }
+
+  :is(.dark *) &:hover {
+    @apply bg-red-900/20;
+  }
+}
+
+.settings-btn-sync {
+  @apply inline-flex items-center gap-1.5 rounded-lg bg-muted px-3 py-1.5 text-xs font-medium text-foreground transition;
+
+  &:disabled {
+    @apply opacity-50;
+  }
+}
+
+.settings-connected-badge {
+  @apply ml-auto inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700;
+
+  :is(.dark *) & {
+    @apply bg-green-900/30 text-green-400;
+  }
+}
+
+.settings-active-badge {
+  @apply ml-auto inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700;
+
+  :is(.dark *) & {
+    @apply bg-blue-900/30 text-blue-400;
+  }
+}
+
+.settings-feature-gate-overlay {
+  @apply absolute inset-0 flex items-center justify-center;
+}
+
+.settings-feature-gate-banner {
+  @apply flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700 backdrop-blur-sm;
+
+  :is(.dark *) & {
+    @apply border-amber-500/20 bg-amber-500/5 text-amber-400;
+  }
+}
+
+.settings-payment-link-row {
+  @apply flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3;
+}
+
+.settings-cycle-btn {
+  @apply rounded-md px-3 py-1.5 text-xs font-medium transition;
+}
+
+.settings-cycle-btn-active {
+  @apply bg-muted text-foreground;
+}
+
+.settings-cycle-btn-inactive {
+  @apply text-dimmed-foreground;
+
+  &:hover {
+    @apply text-muted-foreground;
+  }
+}

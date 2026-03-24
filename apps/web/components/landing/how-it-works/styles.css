@@ -1,0 +1,38 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.landing-how-it-works {
+  @apply border-y border-border bg-card py-24;
+}
+
+.landing-steps-grid {
+  @apply grid gap-8;
+
+  @media (width >= 40rem) {
+    @apply grid-cols-3;
+  }
+}
+
+.landing-step {
+  @apply relative text-center;
+}
+
+.landing-step-num {
+  @apply mx-auto flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white;
+  background: linear-gradient(135deg, var(--lp-landing-primary), var(--lp-landing-accent));
+  box-shadow: 0 4px 16px var(--lp-landing-glow);
+}
+
+/* Connecting dashed line between steps (desktop only) */
+.landing-step-connector {
+  display: none;
+
+  @media (width >= 40rem) {
+    display: block;
+    position: absolute;
+    top: 24px;
+    left: calc(50% + 32px);
+    width: calc(100% - 64px);
+    border-top: 2px dashed var(--border);
+  }
+}

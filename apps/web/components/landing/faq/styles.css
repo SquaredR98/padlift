@@ -1,0 +1,16 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.landing-faq-item {
+  @apply rounded-xl border border-border bg-card px-5 transition-all;
+  margin-bottom: 0.75rem;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--border) 60%, var(--lp-landing-primary));
+  }
+
+  &[data-state="open"] {
+    border-color: var(--lp-landing-primary);
+    box-shadow: 0 0 0 1px var(--lp-landing-primary);
+  }
+}

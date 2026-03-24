@@ -1,0 +1,21 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.landing-features {
+  @apply py-24;
+}
+
+.landing-feature-card {
+  @apply rounded-xl border border-border bg-card p-6 transition-all;
+
+  &:hover {
+    box-shadow: 0 8px 32px var(--lp-landing-glow);
+    border-color: color-mix(in srgb, var(--border) 60%, var(--lp-landing-primary));
+  }
+}
+
+.landing-feature-icon {
+  @apply flex h-10 w-10 items-center justify-center rounded-lg;
+  background: color-mix(in srgb, var(--lp-landing-primary) 12%, transparent);
+  color: var(--lp-landing-primary);
+}

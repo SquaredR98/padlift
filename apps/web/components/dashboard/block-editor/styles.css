@@ -1,0 +1,70 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.be-toolbar {
+  @apply flex h-14 shrink-0 items-center justify-between border-b border-[var(--lp-border)] bg-[var(--lp-bg-panel)] px-4;
+}
+
+.be-toolbar-back {
+  @apply flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-[var(--lp-text-secondary)] transition-colors;
+
+  &:hover {
+    @apply text-[var(--lp-text)] bg-[var(--lp-bg-hover)];
+  }
+}
+
+.be-toolbar-divider {
+  @apply h-5 w-px bg-[var(--lp-border)];
+}
+
+.be-toolbar-icon-btn {
+  @apply rounded-md p-1.5 text-[var(--lp-text-secondary)] transition-colors;
+
+  &:hover {
+    @apply text-[var(--lp-text)] bg-[var(--lp-bg-hover)];
+  }
+
+  &:disabled {
+    @apply opacity-30 cursor-not-allowed;
+  }
+}
+
+.be-preview-toggle {
+  @apply flex items-center gap-0.5 rounded-lg border border-[var(--lp-border)] p-0.5;
+}
+
+.be-save-btn {
+  @apply flex items-center gap-1.5 rounded-md border border-[var(--lp-border)] px-3 py-1.5 text-sm text-[var(--lp-text-secondary)] transition-colors;
+
+  &:hover {
+    @apply text-[var(--lp-text)] border-[var(--lp-text-muted)];
+  }
+}
+
+.be-publish-btn {
+  @apply flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors;
+
+  &:hover {
+    @apply bg-blue-500;
+  }
+
+  &:disabled {
+    @apply opacity-50;
+  }
+}
+
+.be-external-link {
+  @apply flex items-center gap-1 rounded-md px-2.5 py-1.5 text-sm text-[var(--lp-text-secondary)] transition-colors;
+
+  &:hover {
+    @apply text-[var(--lp-text)] bg-[var(--lp-bg-hover)];
+  }
+}
+
+.be-panel-left {
+  @apply w-64 shrink-0 overflow-hidden border-r border-[var(--lp-border)] bg-[var(--lp-bg-panel)] flex flex-col;
+}
+
+.be-panel-right {
+  @apply w-80 shrink-0 overflow-y-auto border-l border-[var(--lp-border)] bg-[var(--lp-bg-panel)] flex flex-col;
+}

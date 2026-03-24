@@ -1,0 +1,14 @@
+@reference "tailwindcss";
+@reference "../../../app/globals.css";
+
+.landing-footer {
+  @apply border-t border-border py-12;
+}
+
+.landing-footer-grid {
+  @apply grid gap-8;
+
+  @media (width >= 40rem) {
+    @apply grid-cols-4;
+  }
+}

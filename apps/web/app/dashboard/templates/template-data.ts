@@ -1,0 +1,90 @@
+import {
+  Layout,
+  Zap,
+  Hammer,
+  Mail,
+  Clock,
+  Briefcase,
+  Sparkles,
+  Code2,
+  Minimize2,
+  Palette,
+  Rocket,
+  Moon,
+  Layers,
+  Megaphone,
+  Smartphone,
+  Store,
+  Target,
+  Users,
+  Landmark,
+  ShoppingBag,
+} from 'lucide-react';
+import { createElement } from 'react';
+
+export const CATEGORY_COLORS: Record<string, string> = {
+  saas: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+  waitlist: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+  newsletter: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+  'coming-soon': 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+  agency: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20',
+  devtool: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+  ai: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+  mobile: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20',
+  marketplace: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20',
+  productivity: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
+  community: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+  fintech: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+  ecommerce: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20',
+};
+
+const ICON_MAP: Record<string, typeof Layout> = {
+  'saas-starter': Layout,
+  'viral-waitlist': Zap,
+  'indie-hacker': Hammer,
+  newsletter: Mail,
+  'coming-soon': Clock,
+  agency: Briefcase,
+  'ai-product': Sparkles,
+  'dev-tool': Code2,
+  'minimal-waitlist': Minimize2,
+  'gradient-waitlist': Palette,
+  'yc-waitlist': Rocket,
+  'dark-mode-saas': Moon,
+  'glassmorphism-launch': Layers,
+  'startup-bold': Megaphone,
+  'mobile-app': Smartphone,
+  marketplace: Store,
+  'productivity-tool': Target,
+  'community-launch': Users,
+  'fintech-launch': Landmark,
+  'ecommerce-teaser': ShoppingBag,
+};
+
+export function getTemplateIcon(id: string) {
+  const Icon = ICON_MAP[id] ?? Layout;
+  return createElement(Icon, { className: 'h-6 w-6' });
+}
+
+export const ACCENT_COLORS: Record<string, string> = {
+  'saas-starter': '#3b82f6',
+  'viral-waitlist': '#8b5cf6',
+  'indie-hacker': '#f59e0b',
+  newsletter: '#f43f5e',
+  'coming-soon': '#f59e0b',
+  agency: '#ec4899',
+  'ai-product': '#6366f1',
+  'dev-tool': '#10b981',
+  'minimal-waitlist': '#06b6d4',
+  'gradient-waitlist': '#a855f7',
+  'yc-waitlist': '#f97316',
+  'dark-mode-saas': '#22d3ee',
+  'glassmorphism-launch': '#a78bfa',
+  'startup-bold': '#f43f5e',
+  'mobile-app': '#8b5cf6',
+  marketplace: '#ec4899',
+  'productivity-tool': '#0ea5e9',
+  'community-launch': '#f59e0b',
+  'fintech-launch': '#059669',
+  'ecommerce-teaser': '#14b8a6',
+};
