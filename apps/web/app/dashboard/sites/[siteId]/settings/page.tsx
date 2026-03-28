@@ -112,26 +112,6 @@ export default function SiteSettingsPage() {
     }
   };
 
-  const handleAddPaymentLink = async (link: { planName: string; price: number; billingCycle: string; stripeUrl: string }) => {
-    if (!site) return;
-    await fetch(`/api/sites/${site.id}/payment-links`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(link),
-    });
-    await fetchSettings();
-  };
-
-  const handleDeleteLink = async (linkId: string) => {
-    if (!site) return;
-    await fetch(`/api/sites/${site.id}/payment-links`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: linkId }),
-    });
-    await fetchSettings();
-  };
-
   const handleDeleteSite = async () => {
     if (!site) return;
     await fetch(`/api/sites/${site.id}`, { method: 'DELETE' });
@@ -236,11 +216,7 @@ export default function SiteSettingsPage() {
             }}
           />
 
-          <PaymentLinksSection
-            paymentLinks={settings?.paymentLinks ?? []}
-            onAddLink={handleAddPaymentLink}
-            onDeleteLink={handleDeleteLink}
-          />
+          <PaymentLinksSection />
 
           <DangerZoneSection
             siteName={settings?.name ?? ''}

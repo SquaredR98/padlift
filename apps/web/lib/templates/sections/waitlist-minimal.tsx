@@ -39,27 +39,30 @@ export function WaitlistMinimal({ branding, content, styles }: BlockComponentPro
         {status === 'success' ? (
           <p className="text-center text-sm font-medium text-green-500">{successMessage}</p>
         ) : (
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={placeholder}
-              required
-              className="h-11 flex-1 rounded-xl border border-[var(--lp-site-border)] bg-[var(--lp-site-card)] px-4 text-sm text-[var(--lp-site-heading)] placeholder:text-[var(--lp-site-muted)]"
-              style={{ outlineColor: branding.primaryColor }}
-            />
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className={cn(
-                'h-11 shrink-0 rounded-xl px-6 text-sm font-semibold text-white transition-all',
-                status === 'loading' && 'opacity-70'
-              )}
-              style={{ backgroundColor: branding.primaryColor }}
-            >
-              {status === 'loading' ? '...' : ctaText}
-            </button>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={placeholder}
+                required
+                className="h-11 flex-1 rounded-xl border border-[var(--lp-site-border)] bg-[var(--lp-site-card)] px-4 text-sm text-[var(--lp-site-heading)] placeholder:text-[var(--lp-site-muted)]"
+                style={{ outlineColor: branding.primaryColor }}
+              />
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className={cn(
+                  'h-11 shrink-0 rounded-xl px-6 text-sm font-semibold text-white transition-all',
+                  status === 'loading' && 'opacity-70'
+                )}
+                style={{ backgroundColor: branding.primaryColor }}
+              >
+                {status === 'loading' ? '...' : ctaText}
+              </button>
+            </div>
+            <p className="text-center text-[10px] text-[var(--lp-site-muted)]">By joining, you agree to receive updates. No spam.</p>
           </form>
         )}
         {status === 'error' && (

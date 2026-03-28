@@ -74,6 +74,7 @@ export function WaitlistWithBenefits({ branding, content, styles }: BlockCompone
               >
                 {status === 'loading' ? 'Joining...' : ctaText}
               </button>
+              <p className="text-[10px] text-[var(--lp-site-muted)]">By joining, you agree to receive updates. No spam.</p>
             </form>
           )}
           {status === 'error' && (

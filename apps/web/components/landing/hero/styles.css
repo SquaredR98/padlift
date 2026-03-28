@@ -76,6 +76,15 @@
   @apply mb-8 max-w-2xl text-lg text-muted-foreground;
 }
 
+/* ── Pain Points ── */
+.landing-hero-pain {
+  @apply mb-8 flex flex-col items-center gap-3 sm:flex-row sm:gap-6;
+}
+
+.landing-hero-pain-item {
+  @apply flex items-center gap-2;
+}
+
 /* ── CTA ── */
 .landing-hero-cta {
   @apply flex items-center gap-2 rounded-lg px-6 py-3 font-medium text-white transition-all;

@@ -61,6 +61,18 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'form'>
         </Field>
 
         <Field>
+          <label className="flex items-start gap-2 text-sm text-muted-foreground">
+            <input type="checkbox" name="terms" required className="mt-1 h-4 w-4 shrink-0 rounded border-border" />
+            <span>
+              I agree to the{' '}
+              <Link href="/terms" target="_blank" className="underline underline-offset-4 hover:text-primary">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="/privacy" target="_blank" className="underline underline-offset-4 hover:text-primary">Privacy Policy</Link>
+            </span>
+          </label>
+        </Field>
+
+        <Field>
           <button type="submit" disabled={loading} className="auth-btn-primary flex items-center justify-center gap-2">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create account'}
           </button>

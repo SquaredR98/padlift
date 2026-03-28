@@ -33,7 +33,7 @@ export default async function SiteOverviewPage({
     { href: editorHref, label: 'Page Editor', description: 'Edit your page content and layout', icon: Paintbrush, color: 'bg-blue-600/10 text-blue-400' },
     { href: `/dashboard/sites/${site.id}/waitlist`, label: 'Waitlist', description: 'Manage signups & referrals', icon: Users, color: 'bg-green-600/10 text-green-400' },
     { href: `/dashboard/sites/${site.id}/analytics`, label: 'Analytics', description: 'Visitors, conversions, funnel', icon: BarChart3, color: 'bg-purple-600/10 text-purple-400' },
-    { href: `/dashboard/sites/${site.id}/ab-tests`, label: 'A/B Tests', description: 'Test variants for revenue', icon: FlaskConical, color: 'bg-orange-600/10 text-orange-400' },
+    { href: `/dashboard/sites/${site.id}/ab-tests`, label: 'A/B Tests', description: 'Coming Soon', icon: FlaskConical, color: 'bg-orange-600/10 text-orange-400' },
     { href: `/dashboard/sites/${site.id}/settings`, label: 'Settings', description: 'Domain, analytics, config', icon: Settings, color: 'bg-gray-600/10 text-gray-400' },
   ];
 
@@ -83,7 +83,7 @@ export default async function SiteOverviewPage({
         </section>
 
         <RecentWaitlistTable siteId={site.id} entries={waitlistData.entries} total={waitlistCount} />
-        <PaymentLinksSection siteId={site.id} links={site.paymentLinks} />
+        <PaymentLinksSection />
       </div>
     </div>
   );

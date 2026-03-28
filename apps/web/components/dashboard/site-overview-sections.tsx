@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { CreditCard } from 'lucide-react';
-import { Badge } from '@/app/dashboard/components/ui/badge';
+
 
 // ─── Recent Waitlist Table ───────────────────────────────────
 
@@ -63,40 +63,15 @@ export function RecentWaitlistTable({ siteId, entries, total }: {
 
 // ─── Payment Links Section ───────────────────────────────────
 
-interface PaymentLink {
-  id: string;
-  planName: string;
-  price: string | number;
-  billingCycle: string;
-}
-
-export function PaymentLinksSection({ siteId, links }: { siteId: string; links: PaymentLink[] }) {
+export function PaymentLinksSection() {
   return (
     <section>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Payment Links</h2>
-        <Link href={`/dashboard/sites/${siteId}/settings`} className="text-sm text-muted-foreground transition hover:text-foreground">
-          Manage
-        </Link>
+      <h2 className="mb-4 text-lg font-semibold text-foreground">Payment Links</h2>
+      <div className="rounded-lg border border-border bg-card p-6 text-center">
+        <CreditCard className="mx-auto h-6 w-6 text-dimmed-foreground" />
+        <p className="mt-2 text-sm font-medium text-foreground">Coming Soon</p>
+        <p className="mt-1 text-xs text-dimmed-foreground">Payment link management is coming in a future update.</p>
       </div>
-      {links.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-6 text-center">
-          <CreditCard className="mx-auto h-6 w-6 text-dimmed-foreground" />
-          <p className="mt-2 text-sm text-dimmed-foreground">No payment links configured. Add payment links in settings.</p>
-        </div>
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {links.map((link) => (
-            <div key={link.id} className="rounded-lg border border-border bg-card p-4">
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-foreground">{link.planName}</p>
-                <Badge variant="info">{link.billingCycle}</Badge>
-              </div>
-              <p className="mt-1 text-lg font-bold text-foreground">${Number(link.price).toFixed(2)}</p>
-            </div>
-          ))}
-        </div>
-      )}
     </section>
   );
 }

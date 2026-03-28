@@ -91,6 +91,7 @@ export function WaitlistMultiField({ branding, content, styles }: BlockComponent
               >
                 {status === 'loading' ? 'Joining...' : ctaText}
               </button>
+              <p className="text-center text-[10px] text-[var(--lp-site-muted)]">By joining, you agree to receive updates. No spam.</p>
             </form>
           )}
           {status === 'error' && (

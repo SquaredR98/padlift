@@ -71,6 +71,7 @@ export function WaitlistForm({ branding, content, styles }: BlockComponentProps)
             >
               {ctaText}
             </Button>
+            <p className="mt-2 w-full text-center text-[10px] text-[var(--lp-site-muted)] sm:text-left">By joining, you agree to receive updates. No spam.</p>
           </form>
         ) : (
           <div className={cn("mt-10 border border-[var(--lp-site-border)] bg-[var(--lp-site-card)] px-6 py-8", tokens.borderRadius)}>

@@ -100,6 +100,10 @@ export function HeroWaitlist({ branding, content, styles }: BlockComponentProps)
           </button>
         </form>
 
+        {status === 'idle' && (
+          <p className="mt-2 text-[10px] text-[var(--lp-site-muted)]">By joining, you agree to receive updates. No spam.</p>
+        )}
+
         {status === 'success' && (
           <p className="mt-3 text-sm font-medium text-green-500">
             You're on the list! We'll be in touch soon.
