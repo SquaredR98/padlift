@@ -8,11 +8,10 @@ export function createStorageAdapter(): StorageAdapter {
   const provider = process.env.STORAGE_PROVIDER || 'local';
 
   if (provider === 'r2') {
-    // Lazy-require R2 adapter using opaque path to prevent bundler
-    // from statically resolving and bundling @aws-sdk/client-s3.
-    const adapterPath = ['.', 'r2-adapter'].join('/');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const mod = require(adapterPath);
+    // Use Function constructor to hide require() from bundler static analysis
+    // This prevents webpack/turbopack from trying to bundle @aws-sdk/client-s3
+    const loadModule = new Function('m', 'return require(m)');
+    const mod = loadModule('./r2-adapter');
     const { R2StorageAdapter } = mod;
 
     const accountId = process.env.R2_ACCOUNT_ID;

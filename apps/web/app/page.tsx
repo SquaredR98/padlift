@@ -13,7 +13,7 @@ import { LandingFooter } from '@/components/landing/footer';
 export default async function LandingPage() {
   const [planConfigs, testimonials] = await Promise.all([
     getAllPlanConfigs(),
-    testimonialsService.getApprovedFeatured(),
+    testimonialsService.getApprovedFeatured().catch(() => []),
   ]);
 
   return (

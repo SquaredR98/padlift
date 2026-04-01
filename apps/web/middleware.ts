@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 
+export const runtime = 'nodejs';
+
 /**
  * Hosts that belong to the Padlift app itself (not customer custom domains).
  * Add your production domain here when deploying.
