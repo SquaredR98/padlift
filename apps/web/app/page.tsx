@@ -10,8 +10,6 @@ import { LandingFAQ } from '@/components/landing/faq';
 import { LandingCTA } from '@/components/landing/cta';
 import { LandingFooter } from '@/components/landing/footer';
 
-export const dynamic = 'force-dynamic';
-
 export default async function LandingPage() {
   const [planConfigs, testimonials] = await Promise.all([
     getAllPlanConfigs(),
