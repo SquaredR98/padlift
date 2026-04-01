@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   // Database
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string(),
 
   // Auth.js
   AUTH_SECRET: z.string().min(32),
@@ -10,16 +10,15 @@ const envSchema = z.object({
   AUTH_GOOGLE_ID: z.string().optional(),
   AUTH_GOOGLE_SECRET: z.string().optional(),
 
-  // Upstash Redis
-  UPSTASH_REDIS_REST_URL: z.string(),
-  UPSTASH_REDIS_REST_TOKEN: z.string(),
-
-  // Resend
-  RESEND_API_KEY: z.string().startsWith('re_'),
-
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
   NEXT_PUBLIC_API_URL: z.string().default('/api'),
+
+  // Gumroad
+  GUMROAD_SELLER_ID: z.string().optional(),
+
+  // Production domains (comma-separated, for custom domain detection)
+  APP_DOMAINS: z.string().optional(),
 
   // Node
   NODE_ENV: z
