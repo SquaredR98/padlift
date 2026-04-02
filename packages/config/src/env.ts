@@ -20,6 +20,10 @@ const envSchema = z.object({
   // Production domains (comma-separated, for custom domain detection)
   APP_DOMAINS: z.string().optional(),
 
+  // Vercel Domains API (auto-register custom domains)
+  VERCEL_PROJECT_ID: z.string().optional(),
+  VERCEL_API_TOKEN: z.string().optional(),
+
   // Node
   NODE_ENV: z
     .enum(['development', 'production', 'test'])

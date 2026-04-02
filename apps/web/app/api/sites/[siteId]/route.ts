@@ -3,6 +3,7 @@ import { getAuthProfile } from '@/lib/api-auth';
 import { sitesService } from '@/lib/service-container';
 import { ServiceError } from '@launchpad/services';
 import { canUseCustomDomain, planLimitResponse } from '@/lib/plan-gate';
+import { addDomainToVercel, removeDomainFromVercel } from '@/lib/vercel-domains';
 
 // GET /api/sites/[siteId] — get site details
 export async function GET(
@@ -57,7 +58,24 @@ export async function PATCH(
       return await planLimitResponse('custom domains', profile.plan);
     }
 
+    // Track old custom domain before update (for Vercel sync)
+    const oldDomain = site.customDomain;
+    const newDomain: string | null = body.customDomain ?? undefined;
+
     const updated = await sitesService.update(siteId, body);
+
+    // Sync custom domain with Vercel (fire-and-forget, don't block response)
+    if (newDomain !== undefined && newDomain !== oldDomain) {
+      // Remove old domain if it existed
+      if (oldDomain) {
+        removeDomainFromVercel(oldDomain).catch(() => {});
+      }
+      // Add new domain if set
+      if (newDomain) {
+        addDomainToVercel(newDomain).catch(() => {});
+      }
+    }
+
     return Response.json(updated);
   } catch (err) {
     if (err instanceof ServiceError) {
@@ -83,6 +101,11 @@ export async function DELETE(
 
     if (site.profileId !== profile.id) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Remove custom domain from Vercel before deleting
+    if (site.customDomain) {
+      removeDomainFromVercel(site.customDomain).catch(() => {});
     }
 
     await sitesService.delete(siteId);
