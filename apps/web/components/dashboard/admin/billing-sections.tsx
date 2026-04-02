@@ -5,37 +5,41 @@ import { Badge } from '@/app/dashboard/components/ui/badge';
 
 // ─── Revenue Breakdown ────────────────────────────────────────
 
-export function RevenueBreakdown({ counts, proMrr, bizMrr }: {
-  counts: Record<string, number>; proMrr: number; bizMrr: number;
+const TIER_STYLES: Record<string, { border: string; bg: string; text: string; badge: string; sub: string }> = {
+  FREE:     { border: 'border-border', bg: 'bg-card', text: 'text-foreground', badge: 'bg-muted text-muted-foreground', sub: 'text-dimmed-foreground' },
+  LITE:     { border: 'border-green-200 dark:border-green-900/50', bg: 'bg-green-50 dark:bg-green-950/30', text: 'text-green-700 dark:text-green-300', badge: 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300', sub: 'text-green-600/70 dark:text-green-400/70' },
+  STARTER:  { border: 'border-cyan-200 dark:border-cyan-900/50', bg: 'bg-cyan-50 dark:bg-cyan-950/30', text: 'text-cyan-700 dark:text-cyan-300', badge: 'bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300', sub: 'text-cyan-600/70 dark:text-cyan-400/70' },
+  PRO:      { border: 'border-blue-200 dark:border-blue-900/50', bg: 'bg-blue-50 dark:bg-blue-950/30', text: 'text-blue-700 dark:text-blue-300', badge: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300', sub: 'text-blue-600/70 dark:text-blue-400/70' },
+  BUSINESS: { border: 'border-purple-200 dark:border-purple-900/50', bg: 'bg-purple-50 dark:bg-purple-950/30', text: 'text-purple-700 dark:text-purple-300', badge: 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300', sub: 'text-purple-600/70 dark:text-purple-400/70' },
+};
+
+const TIER_ORDER = ['FREE', 'LITE', 'STARTER', 'PRO', 'BUSINESS'];
+const TIER_LABELS: Record<string, string> = { FREE: 'Free', LITE: 'Lite', STARTER: 'Starter', PRO: 'Pro', BUSINESS: 'Business' };
+
+export function RevenueBreakdown({ counts, tierMrr }: {
+  counts: Record<string, number>; tierMrr: Record<string, number>;
 }) {
   return (
     <section>
       <h2 className="mb-4 text-lg font-semibold text-foreground">Revenue Breakdown</h2>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-border bg-card p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">Free</p>
-            <span className="rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{counts.FREE ?? 0} users</span>
-          </div>
-          <p className="mt-2 text-3xl font-bold text-foreground">$0</p>
-          <p className="mt-1 text-xs text-dimmed-foreground">No revenue contribution</p>
-        </div>
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-5 dark:border-blue-900/50 dark:bg-blue-950/30">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Pro</p>
-            <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">{counts.PRO ?? 0} users</span>
-          </div>
-          <p className="mt-2 text-3xl font-bold text-blue-700 dark:text-blue-300">${proMrr.toFixed(0)}</p>
-          <p className="mt-1 text-xs text-blue-600/70 dark:text-blue-400/70">/month from Pro tier</p>
-        </div>
-        <div className="rounded-lg border border-purple-200 bg-purple-50 p-5 dark:border-purple-900/50 dark:bg-purple-950/30">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Business</p>
-            <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">{counts.BUSINESS ?? 0} users</span>
-          </div>
-          <p className="mt-2 text-3xl font-bold text-purple-700 dark:text-purple-300">${bizMrr.toFixed(0)}</p>
-          <p className="mt-1 text-xs text-purple-600/70 dark:text-purple-400/70">/month from Business tier</p>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {TIER_ORDER.map((tier) => {
+          const s = TIER_STYLES[tier] ?? TIER_STYLES.FREE;
+          const mrr = tierMrr[tier] ?? 0;
+          const label = TIER_LABELS[tier] ?? tier;
+          return (
+            <div key={tier} className={`rounded-lg border ${s.border} ${s.bg} p-5`}>
+              <div className="flex items-center justify-between">
+                <p className={`text-sm font-medium ${s.text}`}>{label}</p>
+                <span className={`rounded px-2 py-0.5 text-xs font-medium ${s.badge}`}>{counts[tier] ?? 0} users</span>
+              </div>
+              <p className={`mt-2 text-3xl font-bold ${s.text}`}>${mrr.toFixed(0)}</p>
+              <p className={`mt-1 text-xs ${s.sub}`}>
+                {tier === 'FREE' ? 'No revenue contribution' : `/month from ${label} tier`}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -80,7 +84,7 @@ export function SubscriptionsTable({ subscriptions }: { subscriptions: Subscript
                         </Link>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant={sub.plan === 'BUSINESS' ? 'purple' : sub.plan === 'PRO' ? 'info' : 'default'}>{sub.plan}</Badge>
+                        <Badge variant={sub.plan === 'BUSINESS' ? 'purple' : sub.plan === 'PRO' ? 'info' : sub.plan === 'STARTER' ? 'info' : sub.plan === 'LITE' ? 'success' : 'default'}>{sub.plan}</Badge>
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-mono text-xs text-muted-foreground">{sub.gumroadSubscriptionId || '—'}</span>

@@ -21,7 +21,7 @@ interface UserRow {
   _count: { sites: number };
 }
 
-const PLAN_FILTERS = ['All', 'FREE', 'PRO', 'BUSINESS'] as const;
+const PLAN_FILTERS = ['All', 'FREE', 'LITE', 'STARTER', 'PRO', 'BUSINESS'] as const;
 const ROLE_FILTERS = ['All', 'USER', 'ADMIN', 'SUPER_ADMIN'] as const;
 
 export default function AdminUsersPage() {

@@ -8,6 +8,8 @@ import {
   Crown,
   Zap,
   Building2,
+  Star,
+  Rocket,
 } from 'lucide-react';
 import { PageHeader } from '../components/ui/page-header';
 import { Badge } from '../components/ui/badge';
@@ -37,12 +39,16 @@ function buildFeatureList(cfg: PlanConfigData): string[] {
 
 const TIER_ICONS: Record<string, typeof Zap> = {
   FREE: Zap,
+  LITE: Star,
+  STARTER: Rocket,
   PRO: Crown,
   BUSINESS: Building2,
 };
 
 const TIER_COLORS: Record<string, string> = {
   FREE: 'border-border',
+  LITE: 'border-green-800',
+  STARTER: 'border-cyan-800',
   PRO: 'border-blue-800',
   BUSINESS: 'border-purple-800',
 };

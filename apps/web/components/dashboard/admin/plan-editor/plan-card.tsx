@@ -6,6 +6,8 @@ import {
   Zap,
   Crown,
   Building2,
+  Star,
+  Rocket,
   Check,
   X,
 } from 'lucide-react';
@@ -13,12 +15,16 @@ import type { PlanConfigRow } from './index';
 
 const TIER_ICONS: Record<string, typeof Zap> = {
   FREE: Zap,
+  LITE: Star,
+  STARTER: Rocket,
   PRO: Crown,
   BUSINESS: Building2,
 };
 
 const TIER_ACCENT: Record<string, string> = {
   FREE: 'border-border',
+  LITE: 'border-green-800',
+  STARTER: 'border-cyan-800',
   PRO: 'border-blue-800',
   BUSINESS: 'border-purple-800',
 };

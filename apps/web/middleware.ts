@@ -16,7 +16,10 @@ const APP_HOSTS = new Set([
 function isAppHost(host: string): boolean {
   // Strip port for comparison (e.g. "localhost:3001" → "localhost")
   const hostname = host.split(':')[0];
-  return APP_HOSTS.has(hostname);
+  if (APP_HOSTS.has(hostname)) return true;
+  // Auto-recognize Vercel preview/production domains
+  if (hostname.endsWith('.vercel.app')) return true;
+  return false;
 }
 
 async function customDomainHandler(request: NextRequest) {

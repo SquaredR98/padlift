@@ -26,8 +26,7 @@ interface Subscription {
 interface BillingData {
   mrr: number;
   arr: number;
-  proMrr: number;
-  bizMrr: number;
+  tierMrr: Record<string, number>;
   paidUsers: number;
   freeUsers: number;
   counts: Record<string, number>;
@@ -86,7 +85,7 @@ export default function AdminBillingPage() {
           <StatCard label="Free Users" value={data.freeUsers} icon={Users} subtitle={`${totalUsers} total`} />
         </div>
 
-        <RevenueBreakdown counts={data.counts} proMrr={data.proMrr} bizMrr={data.bizMrr} />
+        <RevenueBreakdown counts={data.counts} tierMrr={data.tierMrr} />
         <SubscriptionsTable subscriptions={data.subscriptions} />
       </div>
     </div>

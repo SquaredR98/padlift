@@ -39,13 +39,14 @@ export default async function AdminOverviewPage() {
     db.planConfig?.findMany({ orderBy: { position: 'asc' } }).catch(() => []) ?? Promise.resolve([]),
   ]);
 
-  const plans: Record<string, number> = { FREE: 0, PRO: 0, BUSINESS: 0 };
+  const plans: Record<string, number> = { FREE: 0, LITE: 0, STARTER: 0, PRO: 0, BUSINESS: 0 };
   planDistribution.forEach((p) => { plans[p.plan] = p._count.plan; });
 
-  const proConfig = planConfigs.find((c) => c.tier === 'PRO');
-  const bizConfig = planConfigs.find((c) => c.tier === 'BUSINESS');
-  const totalARR = (plans.PRO * (proConfig ? proConfig.priceMonthly * 12 / 100 : 0)) +
-    (plans.BUSINESS * (bizConfig ? bizConfig.priceMonthly * 12 / 100 : 0));
+  let totalARR = 0;
+  for (const cfg of planConfigs) {
+    if (cfg.tier === 'FREE') continue;
+    totalARR += (plans[cfg.tier] ?? 0) * cfg.priceMonthly * 12 / 100;
+  }
 
   function timeAgo(date: Date) {
     const diff = now.getTime() - new Date(date).getTime();

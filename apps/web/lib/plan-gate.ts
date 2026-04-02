@@ -118,7 +118,7 @@ export async function getAllPlanConfigs(): Promise<Array<{ tier: Plan } & PlanCo
   return Array.from(configs.entries())
     .map(([tier, cfg]) => ({ tier, ...cfg }))
     .sort((a, b) => {
-      const order: Record<string, number> = { FREE: 0, PRO: 1, BUSINESS: 2 };
+      const order: Record<string, number> = { FREE: 0, LITE: 1, STARTER: 2, PRO: 3, BUSINESS: 4 };
       return (order[a.tier] ?? 99) - (order[b.tier] ?? 99);
     });
 }

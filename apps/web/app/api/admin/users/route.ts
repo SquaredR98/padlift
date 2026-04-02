@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     ];
   }
 
-  if (planFilter && ['FREE', 'PRO', 'BUSINESS'].includes(planFilter)) {
+  if (planFilter && ['FREE', 'LITE', 'STARTER', 'PRO', 'BUSINESS'].includes(planFilter)) {
     where.plan = planFilter;
   }
 

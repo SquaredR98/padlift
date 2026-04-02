@@ -16,6 +16,8 @@ export async function GET() {
     db.profile.findMany({
       where: {
         OR: [
+          { plan: 'LITE' },
+          { plan: 'STARTER' },
           { plan: 'PRO' },
           { plan: 'BUSINESS' },
         ],
@@ -34,28 +36,28 @@ export async function GET() {
     }),
   ]);
 
-  const counts: Record<string, number> = { FREE: 0, PRO: 0, BUSINESS: 0 };
+  const counts: Record<string, number> = { FREE: 0, LITE: 0, STARTER: 0, PRO: 0, BUSINESS: 0 };
   planDistribution.forEach((p) => {
     counts[p.plan] = p._count.plan;
   });
 
-  const proConfig = planConfigs.find((c) => c.tier === 'PRO');
-  const bizConfig = planConfigs.find((c) => c.tier === 'BUSINESS');
-
-  const proMonthly = proConfig ? proConfig.priceMonthly / 100 : 0;
-  const bizMonthly = bizConfig ? bizConfig.priceMonthly / 100 : 0;
-
-  const proMrr = counts.PRO * proMonthly;
-  const bizMrr = counts.BUSINESS * bizMonthly;
-  const mrr = proMrr + bizMrr;
+  // Calculate MRR from all paid tiers
+  let mrr = 0;
+  const tierMrr: Record<string, number> = {};
+  for (const cfg of planConfigs) {
+    if (cfg.tier === 'FREE') continue;
+    const monthly = cfg.priceMonthly / 100;
+    const tierCount = counts[cfg.tier] ?? 0;
+    tierMrr[cfg.tier] = tierCount * monthly;
+    mrr += tierMrr[cfg.tier];
+  }
   const arr = mrr * 12;
 
   return NextResponse.json({
     mrr,
     arr,
-    proMrr,
-    bizMrr,
-    paidUsers: counts.PRO + counts.BUSINESS,
+    tierMrr,
+    paidUsers: (counts.LITE ?? 0) + (counts.STARTER ?? 0) + counts.PRO + counts.BUSINESS,
     freeUsers: counts.FREE,
     counts,
     subscriptions,

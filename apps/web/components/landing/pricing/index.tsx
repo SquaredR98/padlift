@@ -2,18 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Check, X, Zap, Crown, Building2, Sparkles } from 'lucide-react';
+import { Check, X, Rocket, Crown, Building2, Sparkles } from 'lucide-react';
 import type { PlanConfigData } from '@/lib/plan-gate';
 import type { Plan } from '@prisma/client';
 import { FadeIn, HoverCard, motion, staggerContainer, staggerItem } from '../motion';
 import './styles.css';
-
-interface PlanData {
-  tier: Plan;
-  displayName: string;
-  priceMonthly: number;
-  [key: string]: unknown;
-}
 
 interface PricingProps {
   plans: Array<{ tier: Plan } & PlanConfigData>;
@@ -27,37 +20,59 @@ interface PricingVariant {
   gumroadUrl?: string;
 }
 
-const TIER_ICONS: Record<string, typeof Zap> = {
-  FREE: Zap,
+// Only show these tiers as pricing cards
+const VISIBLE_TIERS: Plan[] = ['STARTER', 'PRO', 'BUSINESS'];
+
+const TIER_ICONS: Record<string, typeof Rocket> = {
+  STARTER: Rocket,
   PRO: Crown,
   BUSINESS: Building2,
 };
 
 function formatPrice(cents: number): string {
   if (cents === 0) return '$0';
-  return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+  const dollars = cents / 100;
+  return `$${dollars % 1 === 0 ? dollars.toFixed(0) : dollars.toFixed(2)}`;
 }
 
-function buildAllFeatures(cfg: PlanConfigData): { label: string; included: boolean }[] {
-  return [
-    {
-      label: cfg.maxSites >= 999999 ? 'Unlimited sites' : `${cfg.maxSites} site${cfg.maxSites === 1 ? '' : 's'}`,
-      included: true,
-    },
-    {
-      label: cfg.maxWaitlistEntries >= 999999 ? 'Unlimited waitlist' : `${cfg.maxWaitlistEntries.toLocaleString()} waitlist entries`,
-      included: true,
-    },
-    { label: 'Custom domain', included: cfg.customDomain },
-    { label: 'Google Sheets sync', included: cfg.googleSheets },
-    { label: 'Webhooks', included: cfg.webhooks },
-    { label: 'Remove branding', included: cfg.removeBranding },
-    { label: 'Analytics dashboard', included: cfg.analytics },
-    { label: 'A/B testing', included: cfg.abTesting },
-  ];
+function buildFeatures(tier: Plan, cfg: PlanConfigData): string[] {
+  const features: string[] = [];
+
+  // Scale features first
+  features.push(
+    cfg.maxSites >= 999999
+      ? 'Unlimited sites'
+      : `${cfg.maxSites} site${cfg.maxSites === 1 ? '' : 's'}`,
+  );
+  features.push(
+    cfg.maxPages >= 999999
+      ? 'Unlimited pages'
+      : `${cfg.maxPages} page${cfg.maxPages === 1 ? '' : 's'} per site`,
+  );
+  features.push(`${cfg.maxStorageMb >= 1000 ? `${(cfg.maxStorageMb / 1000).toFixed(0)} GB` : `${cfg.maxStorageMb} MB`} storage`);
+  features.push(
+    cfg.maxWaitlistEntries >= 999999
+      ? 'Unlimited waitlist entries'
+      : `${cfg.maxWaitlistEntries.toLocaleString()} waitlist entries`,
+  );
+
+  // All paid tiers get these features
+  features.push('Custom domain');
+  features.push('Analytics dashboard');
+  features.push('Remove branding');
+  features.push('Google Sheets sync');
+  features.push('Webhooks');
+
+  // Business only
+  if (cfg.abTesting) {
+    features.push('A/B testing');
+  }
+
+  return features;
 }
 
 export function LandingPricing({ plans }: PricingProps) {
+  const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
   const [experimentId, setExperimentId] = useState<string | null>(null);
   const [overrides, setOverrides] = useState<PricingVariant[]>([]);
   const [paymentsEnabled, setPaymentsEnabled] = useState(true);
@@ -66,7 +81,6 @@ export function LandingPricing({ plans }: PricingProps) {
   useEffect(() => {
     async function loadData() {
       try {
-        // Load experiment and payments status in parallel
         const [expRes, payRes] = await Promise.all([
           fetch(
             localStorage.getItem('padlift_pricing_eid')
@@ -107,12 +121,40 @@ export function LandingPricing({ plans }: PricingProps) {
     };
   }
 
+  // Filter to only visible tiers
+  const visiblePlans = plans.filter((p) => VISIBLE_TIERS.includes(p.tier));
+
+  // Calculate save percentage (same for all tiers: ~17%)
+  const samplePlan = visiblePlans.find((p) => p.priceMonthly > 0);
+  const savePercent = samplePlan
+    ? Math.round((1 - samplePlan.priceYearly / (samplePlan.priceMonthly * 12)) * 100)
+    : 17;
+
   return (
     <section id="pricing" className="py-24">
       <div className="mx-auto max-w-5xl px-6">
         <FadeIn className="mb-12 text-center">
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl">Launch at any budget</h2>
-          <p className="mt-4 text-lg text-muted-foreground">Start free. Upgrade when you&apos;re ready.</p>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Every paid plan includes all features. Pick your scale.
+          </p>
+
+          {/* Monthly / Yearly toggle */}
+          <div className="mt-8 inline-flex items-center gap-1 rounded-full border border-border bg-card p-1">
+            <button
+              onClick={() => setBilling('monthly')}
+              className={`pricing-toggle ${billing === 'monthly' ? 'pricing-toggle-active' : ''}`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBilling('yearly')}
+              className={`pricing-toggle ${billing === 'yearly' ? 'pricing-toggle-active' : ''}`}
+            >
+              Yearly
+              <span className="pricing-save-badge">Save {savePercent}%</span>
+            </button>
+          </div>
         </FadeIn>
 
         <motion.div
@@ -122,11 +164,15 @@ export function LandingPricing({ plans }: PricingProps) {
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
         >
-          {plans.map((basePlan) => {
+          {visiblePlans.map((basePlan) => {
             const plan = getDisplayPlan(basePlan);
-            const Icon = TIER_ICONS[plan.tier] ?? Zap;
-            const features = buildAllFeatures(basePlan);
+            const Icon = TIER_ICONS[plan.tier] ?? Rocket;
+            const features = buildFeatures(plan.tier, basePlan);
             const isPopular = plan.tier === 'PRO';
+
+            const monthlyPrice = plan.priceMonthly;
+            const yearlyPrice = plan.priceYearly;
+            const effectiveMonthly = billing === 'yearly' ? yearlyPrice / 12 : monthlyPrice;
 
             return (
               <motion.div key={plan.tier} variants={staggerItem}>
@@ -136,35 +182,49 @@ export function LandingPricing({ plans }: PricingProps) {
                     <Icon className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                     <h3 className="font-semibold text-foreground">{plan.displayName}</h3>
                   </div>
-                  <p className="mt-3 text-3xl font-bold text-foreground">
-                    {formatPrice(plan.priceMonthly)}
-                    {plan.priceMonthly > 0 && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
-                  </p>
+
+                  {/* Price display */}
+                  <div className="mt-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-foreground">
+                        {formatPrice(effectiveMonthly)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">/mo</span>
+                      {billing === 'yearly' && monthlyPrice !== effectiveMonthly && (
+                        <span className="pricing-price-struck text-sm">
+                          {formatPrice(monthlyPrice)}
+                        </span>
+                      )}
+                    </div>
+                    {billing === 'yearly' && (
+                      <p className="pricing-yearly-note">
+                        Billed as {formatPrice(yearlyPrice)}/year
+                      </p>
+                    )}
+                  </div>
+
                   <ul className="mt-6 space-y-2.5">
-                    {features.map((f) => (
-                      <li
-                        key={f.label}
-                        className={`flex items-center gap-2 text-sm ${
-                          f.included
-                            ? 'text-muted-foreground'
-                            : 'text-dimmed-foreground/50 line-through'
-                        }`}
-                      >
-                        {f.included ? (
-                          <Check className="h-4 w-4 shrink-0 text-blue-500 dark:text-blue-400" />
-                        ) : (
-                          <X className="h-4 w-4 shrink-0 text-dimmed-foreground/40" />
-                        )}
-                        {f.label}
+                    {features.map((label) => (
+                      <li key={label} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Check className="h-4 w-4 shrink-0 text-blue-500 dark:text-blue-400" />
+                        {label}
                       </li>
                     ))}
+                    {/* Show what Business has that others don't */}
+                    {!basePlan.abTesting && (
+                      <li className="flex items-center gap-2 text-sm text-dimmed-foreground/50 line-through">
+                        <X className="h-4 w-4 shrink-0 text-dimmed-foreground/40" />
+                        A/B testing
+                      </li>
+                    )}
                   </ul>
-                  {plan.priceMonthly === 0 || paymentsEnabled ? (
+
+                  {paymentsEnabled ? (
                     <Link
                       href="/signup"
                       className={`pricing-cta ${isPopular ? 'pricing-cta-primary' : 'pricing-cta-outline'}`}
                     >
-                      {plan.priceMonthly === 0 ? 'Get Started Free' : 'Start Free Trial'}
+                      Get Started
                     </Link>
                   ) : (
                     <button
@@ -179,6 +239,17 @@ export function LandingPricing({ plans }: PricingProps) {
             );
           })}
         </motion.div>
+
+        {/* Free CTA */}
+        <FadeIn className="mt-10 text-center">
+          <p className="text-sm text-muted-foreground">
+            Not ready to commit?{' '}
+            <Link href="/signup" className="font-medium text-blue-500 underline underline-offset-4 hover:text-blue-400">
+              Start free
+            </Link>
+            {' '}&mdash; 1 site, 100 entries, no credit card required.
+          </p>
+        </FadeIn>
       </div>
 
       {/* Coming Soon Popup */}

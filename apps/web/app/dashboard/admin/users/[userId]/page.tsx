@@ -139,10 +139,10 @@ export default function AdminUserDetailPage() {
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-dimmed-foreground">Billing Plan</label>
                 <div className="flex gap-2">
-                  {['FREE', 'PRO', 'BUSINESS'].map((p) => (
+                  {['FREE', 'LITE', 'STARTER', 'PRO', 'BUSINESS'].map((p) => (
                     <button key={p} onClick={() => setPlan(p)} className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                       plan === p
-                        ? p === 'PRO' ? 'bg-blue-600 text-white' : p === 'BUSINESS' ? 'bg-purple-600 text-white' : 'bg-muted text-foreground'
+                        ? p === 'PRO' ? 'bg-blue-600 text-white' : p === 'BUSINESS' ? 'bg-purple-600 text-white' : p === 'LITE' ? 'bg-green-600 text-white' : p === 'STARTER' ? 'bg-cyan-600 text-white' : 'bg-muted text-foreground'
                         : 'border border-border text-muted-foreground hover:bg-muted'
                     }`}>{p}</button>
                   ))}

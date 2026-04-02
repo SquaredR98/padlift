@@ -24,7 +24,7 @@ interface Experiment {
   createdAt: string;
 }
 
-const TIERS = ['FREE', 'PRO', 'BUSINESS'] as const;
+const TIERS = ['FREE', 'LITE', 'STARTER', 'PRO', 'BUSINESS'] as const;
 
 function formatCents(cents: number): string {
   if (cents === 0) return '$0';

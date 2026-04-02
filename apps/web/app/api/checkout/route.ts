@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   const billing = (body.billing as string) ?? 'monthly';
   const experimentId = body.experimentId as string | undefined;
 
-  if (!tier || !['PRO', 'BUSINESS'].includes(tier)) {
+  if (!tier || !['LITE', 'STARTER', 'PRO', 'BUSINESS'].includes(tier)) {
     return NextResponse.json({ error: 'Invalid tier' }, { status: 400 });
   }
 

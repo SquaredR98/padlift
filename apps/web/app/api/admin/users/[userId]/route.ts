@@ -65,7 +65,7 @@ export async function PATCH(
   const updateData: Record<string, unknown> = {};
 
   // Plan change
-  if (body.plan && ['FREE', 'PRO', 'BUSINESS'].includes(body.plan)) {
+  if (body.plan && ['FREE', 'LITE', 'STARTER', 'PRO', 'BUSINESS'].includes(body.plan)) {
     updateData.plan = body.plan;
   }
 

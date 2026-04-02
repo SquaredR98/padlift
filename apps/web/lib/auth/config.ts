@@ -8,7 +8,7 @@ import { db } from '@launchpad/db';
 
 export const authConfig: NextAuthConfig = {
   providers: [
-    Google,
+    Google({ allowDangerousEmailAccountLinking: true }),
     Credentials({
       credentials: {
         email: { label: 'Email', type: 'email' },
