@@ -1,19 +1,19 @@
 {
-  "name": "launchpad",
-  "private": true,
-  "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "type-check": "turbo type-check",
-    "db:migrate": "pnpm --filter @launchpad/db prisma migrate dev",
-    "db:push": "pnpm --filter @launchpad/db prisma db push",
-    "db:generate": "pnpm --filter @launchpad/db prisma generate",
-    "db:studio": "pnpm --filter @launchpad/db prisma studio"
-  },
-  "devDependencies": {
-    "turbo": "^2",
-    "typescript": "^5"
-  },
-  "packageManager": "pnpm@10.24.0"
+	"name": "launchpad",
+	"private": true,
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"lint": "turbo lint",
+		"type-check": "turbo type-check",
+		"db:migrate": "pnpm --filter @launchpad/db db:migrate",
+		"db:push": "pnpm --filter @launchpad/db prisma db push",
+		"db:generate": "pnpm --filter @launchpad/db prisma generate",
+		"db:studio": "pnpm --filter @launchpad/db prisma studio"
+	},
+	"devDependencies": {
+		"turbo": "^2",
+		"typescript": "^5"
+	},
+	"packageManager": "pnpm@10.24.0"
 }

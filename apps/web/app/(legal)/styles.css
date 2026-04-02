@@ -1,0 +1,141 @@
+@reference "tailwindcss";
+@reference "../../app/globals.css";
+
+.legal-header {
+  @apply mb-10 text-center;
+}
+
+.legal-title {
+  @apply text-3xl font-bold tracking-tight text-foreground;
+}
+
+@media (width >= 40rem) {
+  .legal-title {
+    @apply text-4xl;
+  }
+}
+
+.legal-updated {
+  @apply mt-2 text-sm text-muted-foreground;
+}
+
+.legal-intro {
+  @apply mt-6 text-sm leading-relaxed text-muted-foreground;
+}
+
+.legal-section {
+  @apply rounded-xl border border-border bg-card p-5 transition-all;
+  margin-bottom: 1rem;
+}
+
+@media (width >= 40rem) {
+  .legal-section {
+    @apply p-6;
+  }
+}
+
+.legal-section:hover {
+  border-color: color-mix(in srgb, var(--border) 60%, var(--lp-landing-primary));
+}
+
+.legal-section-title {
+  @apply mb-3 text-base font-semibold text-foreground;
+}
+
+.legal-section-subtitle {
+  @apply mb-2 mt-4 text-sm font-semibold text-foreground;
+}
+
+.legal-section-body {
+  @apply text-sm leading-relaxed text-muted-foreground;
+}
+
+.legal-section-body p {
+  @apply mb-3;
+}
+
+.legal-section-body p:last-child {
+  @apply mb-0;
+}
+
+.legal-section-body ul {
+  @apply mb-3 list-disc space-y-1.5 pl-5;
+}
+
+.legal-section-body ul:last-child {
+  @apply mb-0;
+}
+
+.legal-section-body li {
+  @apply text-sm leading-relaxed text-muted-foreground;
+}
+
+.legal-section-body strong {
+  @apply font-medium text-foreground;
+}
+
+.legal-section-body a {
+  color: var(--lp-landing-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal-section-body a:hover {
+  opacity: 0.8;
+}
+
+/* Highlight box for important callouts */
+.legal-highlight {
+  @apply mt-3 rounded-lg border px-4 py-3 text-sm;
+  border-color: color-mix(in srgb, var(--lp-landing-primary) 30%, var(--border));
+  background: color-mix(in srgb, var(--lp-landing-primary) 5%, var(--card));
+}
+
+/* Table styling */
+.legal-table-wrap {
+  @apply mt-3 overflow-x-auto rounded-lg border border-border;
+}
+
+.legal-table-wrap table {
+  @apply w-full text-sm;
+}
+
+.legal-table-wrap thead {
+  background: color-mix(in srgb, var(--lp-landing-primary) 6%, var(--card));
+}
+
+.legal-table-wrap th {
+  @apply px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-foreground;
+}
+
+.legal-table-wrap td {
+  @apply border-t border-border px-4 py-2.5 text-muted-foreground;
+}
+
+/* Footer acknowledgment */
+.legal-footer {
+  @apply mt-10 border-t border-border pt-6 text-center text-sm text-muted-foreground;
+}
+
+.legal-footer a {
+  color: var(--lp-landing-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal-footer a:hover {
+  opacity: 0.8;
+}
+
+/* Contact card */
+.legal-contact {
+  @apply mt-3 flex flex-col gap-2 rounded-lg border border-border bg-card p-4 text-sm;
+}
+
+.legal-contact-item {
+  @apply flex items-center gap-2 text-muted-foreground;
+}
+
+.legal-contact-item span {
+  @apply font-mono text-foreground;
+}
