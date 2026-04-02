@@ -73,22 +73,22 @@ function getHardcodedConfigs(): Map<Plan, PlanConfigData> {
   for (const [tier, cfg] of Object.entries(PLANS)) {
     map.set(tier as Plan, {
       displayName: cfg.name,
-      priceMonthly: 0,
-      priceYearly: 0,
+      priceMonthly: cfg.priceMonthly,
+      priceYearly: cfg.priceYearly,
       gumroadMonthlyUrl: null,
       gumroadYearlyUrl: null,
       gumroadTierName: null,
-      maxSites: cfg.maxPages,
+      maxSites: cfg.maxSites,
       maxWaitlistEntries: cfg.maxWaitlistEntries,
       maxPages: cfg.maxPages,
-      maxPaymentLinks: cfg.paymentLinks,
+      maxPaymentLinks: cfg.maxPaymentLinks,
       customDomain: cfg.customDomain,
       removeBranding: cfg.removeBranding,
-      googleSheets: false,
-      webhooks: false,
+      googleSheets: cfg.googleSheets,
+      webhooks: cfg.webhooks,
       analytics: cfg.analytics,
       abTesting: cfg.abTesting,
-      maxStorageMb: 50,
+      maxStorageMb: cfg.maxStorageMb,
     });
   }
   return map;
