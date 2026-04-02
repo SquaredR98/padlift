@@ -60,8 +60,8 @@ async function loadPlanConfigs(): Promise<Map<Plan, PlanConfigData>> {
       cacheExpiresAt = Date.now() + CACHE_TTL;
       return map;
     }
-  } catch {
-    // DB unavailable — fall through to hardcoded defaults
+  } catch (err) {
+    console.error('[plan-gate] DB query failed, using hardcoded fallback:', err);
   }
 
   return getHardcodedConfigs();

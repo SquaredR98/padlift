@@ -10,6 +10,10 @@ import { LandingFAQ } from '@/components/landing/faq';
 import { LandingCTA } from '@/components/landing/cta';
 import { LandingFooter } from '@/components/landing/footer';
 
+// Revalidate every 60s — serves static HTML to visitors,
+// refreshes plan data from DB in the background.
+export const revalidate = 60;
+
 export default async function LandingPage() {
   const [planConfigs, testimonials] = await Promise.all([
     getAllPlanConfigs(),
