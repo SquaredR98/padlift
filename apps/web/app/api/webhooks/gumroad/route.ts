@@ -41,6 +41,30 @@ export async function POST(req: NextRequest) {
     return new Response('Forbidden', { status: 403 });
   }
 
+  // Verify the sale is genuine via Gumroad's API
+  const saleId = data.sale_id;
+  if (saleId) {
+    try {
+      const verifyRes = await fetch(
+        `https://api.gumroad.com/v2/sales/${encodeURIComponent(saleId)}`,
+        { headers: { Authorization: `Bearer ${process.env.GUMROAD_ACCESS_TOKEN ?? ''}` } },
+      );
+      if (!verifyRes.ok) {
+        console.warn(`[Gumroad Webhook] Sale verification failed for sale_id=${saleId}: HTTP ${verifyRes.status}`);
+        return new Response('Unverified', { status: 403 });
+      }
+      const verifyData = await verifyRes.json() as { success?: boolean; sale?: { email?: string } };
+      if (!verifyData.success) {
+        console.warn(`[Gumroad Webhook] Sale not found: sale_id=${saleId}`);
+        return new Response('Unverified', { status: 403 });
+      }
+    } catch (err) {
+      // If verification API is down, reject to be safe
+      console.error('[Gumroad Webhook] Sale verification error:', err);
+      return new Response('Verification failed', { status: 503 });
+    }
+  }
+
   const email = data.email?.toLowerCase().trim();
   const productId = data.product_id;
   const subscriptionId = data.subscription_id || null;

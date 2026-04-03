@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getAuthProfile } from '@/lib/api-auth';
-import { integrationsService } from '@/lib/service-container';
+import { sitesService, integrationsService } from '@/lib/service-container';
 import { ServiceError } from '@launchpad/services';
 
 /**
@@ -17,6 +17,11 @@ export async function GET(
   const { siteId } = await params;
 
   try {
+    const site = await sitesService.findById(siteId);
+    if (site.profileId !== profile.id) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const integrations = await integrationsService.getIntegrations(siteId);
     // Strip credentials from response
     const safe = integrations.map(({ credentials, ...rest }) => rest);

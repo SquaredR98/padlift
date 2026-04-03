@@ -10,9 +10,8 @@ export const db =
     log: process.env.NODE_ENV === 'development' ? ['query'] : [],
   });
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = db;
-}
+// Cache in ALL environments — prevents connection exhaustion on serverless
+globalForPrisma.prisma = db;
 
 export { PrismaClient };
 export type * from '@prisma/client';

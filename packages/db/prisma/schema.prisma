@@ -311,6 +311,7 @@ model WaitlistEntry {
 
   @@unique([siteId, email])
   @@index([siteId])
+  @@index([siteId, joinedAt])
   @@index([referralCode])
   @@map("waitlist_entries")
 }

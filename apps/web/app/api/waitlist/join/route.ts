@@ -3,6 +3,9 @@ import { waitlistService, sitesService, integrationsService } from '@/lib/servic
 import { ServiceError } from '@launchpad/services';
 import { db } from '@launchpad/db';
 import { getMaxWaitlistEntries } from '@/lib/plan-gate';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+
+const RATE_LIMIT = { name: 'waitlist', limit: 10, windowMs: 60_000 }; // 10 req/min per IP
 
 /**
  * POST /api/waitlist/join
@@ -10,6 +13,15 @@ import { getMaxWaitlistEntries } from '@/lib/plan-gate';
  * Body: { siteId: string, email: string, ref?: string }
  */
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req.headers);
+  const rl = checkRateLimit(RATE_LIMIT, ip);
+  if (rl.limited) {
+    return Response.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } },
+    );
+  }
+
   let body: { siteId?: string; email?: string; ref?: string };
   try {
     body = await req.json();

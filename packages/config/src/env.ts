@@ -16,6 +16,7 @@ const envSchema = z.object({
 
   // Gumroad
   GUMROAD_SELLER_ID: z.string().optional(),
+  GUMROAD_ACCESS_TOKEN: z.string().optional(),
 
   // Production domains (comma-separated, for custom domain detection)
   APP_DOMAINS: z.string().optional(),

@@ -106,7 +106,7 @@ export async function DELETE(
       return Response.json({ error: 'id is required' }, { status: 400 });
     }
 
-    await db.paymentLink.delete({ where: { id } });
+    await db.paymentLink.delete({ where: { id, siteId } });
     return Response.json({ ok: true });
   } catch (err) {
     if (err instanceof ServiceError) {

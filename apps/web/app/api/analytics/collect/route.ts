@@ -1,6 +1,9 @@
 import { NextRequest } from 'next/server';
 import { db } from '@launchpad/db';
 import { createHash } from 'crypto';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+
+const RATE_LIMIT = { name: 'analytics', limit: 60, windowMs: 60_000 }; // 60 req/min per IP
 
 /**
  * Analytics collection endpoint — called from published sites.
@@ -11,17 +14,18 @@ import { createHash } from 'crypto';
  */
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req.headers);
+    const rl = checkRateLimit(RATE_LIMIT, ip);
+    if (rl.limited) {
+      return new Response(null, { status: 204 }); // Silent drop — don't reveal rate limit to beacon
+    }
+
     const body = await req.json();
     const { siteId, path, referrer, ua } = body;
 
     if (!siteId || typeof siteId !== 'string') {
       return new Response(null, { status: 204 });
     }
-
-    // Generate a privacy-safe visitor hash from IP + UA (no PII stored)
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || req.headers.get('x-real-ip')
-      || 'unknown';
     const raw = `${ip}:${ua || ''}:${new Date().toISOString().slice(0, 10)}`;
     const visitorHash = createHash('sha256').update(raw).digest('hex').slice(0, 32);
 

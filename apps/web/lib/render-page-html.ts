@@ -1,9 +1,25 @@
 import { createElement } from 'react';
 import { cn } from '@/lib/utils';
+import sanitizeHtml from 'sanitize-html';
 import type { PageData, BlockComponentProps } from './templates/block-types';
 import { resolveBlockClasses, resolveBlockInlineStyles } from './templates/block-types';
 import { BLOCK_REGISTRY } from './templates/block-registry';
 import { resolveAnchorIds } from './templates/block-anchors';
+
+/** Sanitize user-provided HTML in block content before publishing. */
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['iframe', 'img', 'video', 'source', 'picture']),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'loading', 'title', 'style'],
+    img: ['src', 'alt', 'width', 'height', 'loading', 'style'],
+    video: ['src', 'controls', 'width', 'height', 'autoplay', 'muted', 'loop', 'poster'],
+    source: ['src', 'type'],
+    '*': ['class', 'style', 'id'],
+  },
+  allowedIframeHostnames: ['www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com', 'open.spotify.com', 'codepen.io', 'codesandbox.io'],
+  disallowedTagsMode: 'discard',
+};
 
 /**
  * Render a PageData (block-based) site to static HTML for publishing.
@@ -44,9 +60,18 @@ export async function renderPageToHtml(pageData: PageData): Promise<string> {
       ? { ...branding, primaryColor: block.styles.accentColor }
       : branding;
 
+    // Sanitize user-provided HTML fields to prevent XSS in published sites
+    const safeContent = { ...block.content };
+    if (safeContent.htmlContent && typeof safeContent.htmlContent === 'string') {
+      safeContent.htmlContent = sanitizeHtml(safeContent.htmlContent, SANITIZE_OPTIONS);
+    }
+    if (safeContent.embedCode && typeof safeContent.embedCode === 'string') {
+      safeContent.embedCode = sanitizeHtml(safeContent.embedCode, SANITIZE_OPTIONS);
+    }
+
     const props: BlockComponentProps = {
       branding: effectiveBranding,
-      content: block.content,
+      content: safeContent,
       styles: block.styles,
     };
 

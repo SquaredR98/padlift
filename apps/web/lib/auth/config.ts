@@ -8,7 +8,7 @@ import { db } from '@launchpad/db';
 
 export const authConfig: NextAuthConfig = {
   providers: [
-    Google({ allowDangerousEmailAccountLinking: true }),
+    Google({}),
     Credentials({
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -48,7 +48,7 @@ export const authConfig: NextAuthConfig = {
       const isLoggedIn = !!auth?.user;
 
       // Public routes (include /api/auth for OAuth callbacks)
-      const publicPaths = ['/login', '/signup', '/api/auth/', '/api/waitlist/join', '/s/', '/preview/'];
+      const publicPaths = ['/login', '/signup', '/api/auth/', '/api/waitlist/join', '/api/analytics/collect', '/api/internal/', '/api/testimonials', '/api/feature-requests', '/s/', '/preview/'];
       if (publicPaths.some((p) => pathname.startsWith(p))) return true;
 
       // Protect dashboard

@@ -15,10 +15,13 @@ export const CreateSiteInput = z.object({
 
 export const UpdateSiteInput = z.object({
   name: z.string().min(1).max(100).optional(),
-  customDomain: z.string().optional().nullable(),
-  ga4MeasurementId: z.string().optional().nullable(),
-  gtmContainerId: z.string().optional().nullable(),
-  clarityProjectId: z.string().optional().nullable(),
+  customDomain: z.string().regex(
+    /^(?!.*\.\.)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i,
+    'Invalid domain format',
+  ).max(253).optional().nullable(),
+  ga4MeasurementId: z.string().regex(/^G-[A-Z0-9]+$/, 'Invalid GA4 ID format').optional().nullable(),
+  gtmContainerId: z.string().regex(/^GTM-[A-Z0-9]+$/, 'Invalid GTM ID format').optional().nullable(),
+  clarityProjectId: z.string().regex(/^[a-z0-9]+$/, 'Invalid Clarity ID format').optional().nullable(),
 });
 
 export type CreateSiteInput = z.infer<typeof CreateSiteInput>;

@@ -41,21 +41,21 @@ export function renderSiteHtml(site: SiteData, pageIndex = 0): Response | null {
 
   const analyticsHead = [
     ga4Id
-      ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${ga4Id}"></script>
-         <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}');</script>`
+      ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${escapeHtml(ga4Id)}"></script>
+         <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${escapeJs(ga4Id)}');</script>`
       : '',
     gtmId
-      ? `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');</script>`
+      ? `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${escapeJs(gtmId)}');</script>`
       : '',
     clarityId
-      ? `<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${clarityId}");</script>`
+      ? `<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${escapeJs(clarityId)}");</script>`
       : '',
   ]
     .filter(Boolean)
     .join('\n');
 
   const gtmNoscript = gtmId
-    ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`
+    ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${escapeHtml(gtmId)}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`
     : '';
 
   // "Built with" badge (shown unless plan allows removeBranding)
@@ -86,8 +86,8 @@ export function renderSiteHtml(site: SiteData, pageIndex = 0): Response | null {
   <style>
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; scroll-padding-top: 80px; }
-    body { margin: 0; font-family: '${bodyFont}', 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-    h1, h2, h3, h4, h5, h6 { font-family: '${headingFont}', 'Inter', system-ui, -apple-system, sans-serif; }
+    body { margin: 0; font-family: '${escapeHtml(bodyFont)}', 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3, h4, h5, h6 { font-family: '${escapeHtml(headingFont)}', 'Inter', system-ui, -apple-system, sans-serif; }
     img { max-width: 100%; }
     a { color: inherit; }
 
@@ -179,8 +179,8 @@ export function renderSiteHtml(site: SiteData, pageIndex = 0): Response | null {
   ${js ? `<script>${js}</script>` : ''}
   <script>
   (function(){
-    var SITE_ID="${site.id}";
-    var DEFAULT_THEME="${defaultTheme}";
+    var SITE_ID="${escapeJs(site.id)}";
+    var DEFAULT_THEME="${escapeJs(defaultTheme)}";
     var API_BASE=location.origin.indexOf("localhost")!==-1?location.origin:"";
 
     // ── Theme toggle ──
@@ -298,7 +298,21 @@ export function renderSiteHtml(site: SiteData, pageIndex = 0): Response | null {
     status: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      'Content-Security-Policy': [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' https: data:",
+        "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://open.spotify.com https://www.google.com",
+        "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://www.clarity.ms",
+        "object-src 'none'",
+        "base-uri 'self'",
+      ].join('; '),
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'SAMEORIGIN',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
     },
   });
 }
@@ -309,4 +323,16 @@ function escapeHtml(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+/** Escape a string for safe interpolation inside a JS string literal. */
+function escapeJs(str: string): string {
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/</g, '\\x3c')
+    .replace(/>/g, '\\x3e')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
 }

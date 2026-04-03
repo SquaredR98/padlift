@@ -22,6 +22,35 @@ function isAppHost(host: string): boolean {
   return false;
 }
 
+// ── In-memory domain → slug cache (5 min TTL) ──
+// Prevents an internal fetch on every request for the same custom domain.
+const DOMAIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const domainCache = new Map<string, { slug: string | null; expiresAt: number }>();
+
+function getCachedSlug(domain: string): string | null | undefined {
+  const entry = domainCache.get(domain);
+  if (!entry) return undefined; // cache miss
+  if (Date.now() > entry.expiresAt) {
+    domainCache.delete(domain);
+    return undefined; // expired
+  }
+  return entry.slug; // cache hit (may be null = domain not found)
+}
+
+function setCachedSlug(domain: string, slug: string | null) {
+  // Cap cache size to prevent memory abuse from many unique domains
+  if (domainCache.size > 500) {
+    // Evict oldest entries
+    const keys = domainCache.keys();
+    for (let i = 0; i < 100; i++) {
+      const k = keys.next();
+      if (k.done) break;
+      domainCache.delete(k.value);
+    }
+  }
+  domainCache.set(domain, { slug, expiresAt: Date.now() + DOMAIN_CACHE_TTL });
+}
+
 async function customDomainHandler(request: NextRequest) {
   const host = request.headers.get('host') ?? '';
 
@@ -46,14 +75,30 @@ async function customDomainHandler(request: NextRequest) {
     ) {
       const domain = host.split(':')[0];
 
+      // Check in-memory cache first
+      const cached = getCachedSlug(domain);
+      if (cached !== undefined) {
+        if (cached) {
+          const url = request.nextUrl.clone();
+          url.pathname = `/s/${cached}`;
+          return NextResponse.rewrite(url);
+        }
+        return new NextResponse('Site not found', { status: 404 });
+      }
+
       try {
         // Resolve custom domain → slug via internal API
         const lookupUrl = new URL(
           `/api/internal/domain-lookup?d=${encodeURIComponent(domain)}`,
           request.nextUrl.origin,
         );
-        const res = await fetch(lookupUrl.toString());
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(lookupUrl.toString(), { signal: controller.signal });
+        clearTimeout(timeout);
         const data = await res.json();
+
+        setCachedSlug(domain, data.slug || null);
 
         if (data.slug) {
           const url = request.nextUrl.clone();

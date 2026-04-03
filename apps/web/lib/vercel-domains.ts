@@ -8,6 +8,32 @@
 
 const VERCEL_API = 'https://api.vercel.com';
 
+/** Valid domain format: alphanumeric + hyphens + dots, at least one dot, no IP addresses */
+const DOMAIN_REGEX = /^(?!.*\.\.)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
+
+/** Domains that should never be registered to the project */
+const BLOCKED_DOMAINS = new Set([
+  'localhost', '127.0.0.1', '0.0.0.0',
+  'vercel.app', 'vercel.com', 'google.com', 'github.com',
+]);
+
+/**
+ * Validate a domain string before sending to Vercel API.
+ * Blocks internal, reserved, and malformed domains.
+ */
+function isValidCustomDomain(domain: string): boolean {
+  if (!domain || domain.length > 253) return false;
+  if (!DOMAIN_REGEX.test(domain)) return false;
+  // Block IP addresses
+  if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(domain)) return false;
+  // Block known reserved domains
+  const lower = domain.toLowerCase();
+  for (const blocked of BLOCKED_DOMAINS) {
+    if (lower === blocked || lower.endsWith('.' + blocked)) return false;
+  }
+  return true;
+}
+
 function getConfig() {
   const projectId = process.env.VERCEL_PROJECT_ID;
   const token = process.env.VERCEL_API_TOKEN;
@@ -27,6 +53,11 @@ function headers(token: string) {
  * Idempotent — if the domain already exists, Vercel returns 409 which we ignore.
  */
 export async function addDomainToVercel(domain: string): Promise<{ ok: boolean; error?: string }> {
+  if (!isValidCustomDomain(domain)) {
+    console.warn(`[vercel-domains] Rejected invalid domain: ${domain}`);
+    return { ok: false, error: 'Invalid domain format' };
+  }
+
   const cfg = getConfig();
   if (!cfg) {
     console.warn('[vercel-domains] VERCEL_PROJECT_ID or VERCEL_API_TOKEN not set — skipping domain add');
